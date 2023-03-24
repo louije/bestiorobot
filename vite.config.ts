@@ -9,7 +9,7 @@ export default defineConfig({
       svgoOptions: {
         plugins: [
           // { name: "preset-default", params: { cleanupIds: false } },
-          { name: "removeAttrs", params: { attrs: "(fill|stroke|style)" } },
+          // { name: "removeAttrs", params: { attrs: "(fill|stroke|style)" } },
         ],
       }
     }),

@@ -5,6 +5,7 @@
 <main>
   <AudioStarter>
     <div class="root">
+      <a href="/prosodie/GOUR_002_mix/">GOUR_002_mix</a>
       <a href="/prosodie/GOUR_009_002/">GOUR_009_002</a>
     </div>
   </AudioStarter>
@@ -15,11 +16,19 @@
     height: 31rem;
     margin: 2rem auto;
     display: flex;
+    font-family: sans-serif;
+    font-size: 2rem;
   }
   .root {
     display: flex;
     width: 100%;
     height: 100%;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  a {
+    display: block;
   }
   :global(#grille path) {
     stroke: #F96806;

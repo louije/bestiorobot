@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import type { PageData } from './$types';
-  import { fragmentPath } from "$lib/base";
+  import { fragmentPath, soundFileFor } from "$lib/base";
 
   export let data: PageData;
   let phrase = data.phrase;
@@ -47,10 +47,14 @@
   
   function loadSounds() {
     const [monster, phraseNum, child] = phrase.split("_");
+    const useIDs = (child === "mix");
     let soundPaths: Array<string> = [];
-    fragments.forEach((f, i) => {
-      soundPaths.push(fragmentPath(monster, phraseNum, child, i + 1, "aif"));
-    });
+    
+    if (useIDs) {
+      soundPaths = fragments.map(f => soundFileFor(f.id));
+    } else {
+      soundPaths = fragments.map((f, i) => { return fragmentPath(monster, phraseNum, child, i + 1) });
+    }
     
     sounds = soundPaths.map((p, idx) => {
       const audio = document.createElement("audio") as HTMLAudioElement;
