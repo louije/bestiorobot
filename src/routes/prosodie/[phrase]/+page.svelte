@@ -65,6 +65,10 @@
   
   function addEvents() {
     fragments.forEach((f, i) => {
+      f.addEventListener("click", () => {
+        console.log(i);
+        sounds[i].play();
+      });
       f.addEventListener("mouseenter", () => {
         console.log(i);
         sounds[i].play();
