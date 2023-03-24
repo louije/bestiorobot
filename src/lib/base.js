@@ -6,7 +6,7 @@ function fragmentPath(monster, phrase, child, fragment) {
   const paddedPhrase = String(phrase).padStart(3, "0");
   const paddedFragment = String(fragment).padStart(3, "0");
   const name = `${monster}_${paddedPhrase}_${paddedChild}_FRAG_${paddedFragment}`;
-  return `/base/mp3/${name}.mp3`;
+  return `/mp3/${name}.mp3`;
 }
 
 function fragmentLegacyPath(monster, phrase, child, fragment, ext = "") {
