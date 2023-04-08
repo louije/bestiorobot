@@ -48,7 +48,7 @@
       ...svg.querySelectorAll<SVGPathElement>("#fragments path, #FRAGMENTS path")
     ];
     fragmentElements.forEach((f) => {
-      f.id = f.id.replaceAll("_x5F", ").replace(/_\d{4,}_$/, ");
+      f.id = f.id.replaceAll("_x5F", "").replace(/_\d{4,}_$/, "");
     });
     fragments = fragmentElements.sort((a: SVGPathElement, b: SVGPathElement) => {
       return getPathX(a) - getPathX(b);
