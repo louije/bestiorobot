@@ -4,10 +4,11 @@
   import { fragmentPath, soundFileFor } from "$lib/base";
 
   export let data: PageData;
-  let phrase = data.phrase;
+  const phrase = data.phrase;
+  const board = data.file;
   let loadingIteration = 0;
   
-  const board = () => import(`../../../phrases/${phrase}.svg`);
+  // const board = () => import(`../../../phrases/${phrase}.svg`);
 
   let root: HTMLElement
   let boardComponent: any;

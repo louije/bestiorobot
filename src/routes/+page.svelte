@@ -1,13 +1,16 @@
 <script lang="ts">
+  import type { PageData } from './$types';
   import { onMount } from "svelte";
   import AudioStarter from "./AudioStarter.svelte";
+
+  export let data: PageData;
 </script>
 <main>
   <AudioStarter>
     <div class="root">
-      <a href="/prosodie/GOUR_002_mix/">GOUR_002_mix</a>
-      <a href="/prosodie/GOUR_009_002/">GOUR_009_002</a>
-      <a href="/prosodie/fragments/">fragments</a>
+      {#each data.phrases as phrase}
+        <a href="/prosodie/{phrase}">{phrase}</a>
+      {/each}
     </div>
   </AudioStarter>
 </main>
