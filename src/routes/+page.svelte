@@ -1,10 +1,11 @@
 <script lang="ts">
-  import type { PageData } from './$types';
+  import type { PageData } from "./$types";
   import { onMount } from "svelte";
   import AudioStarter from "./AudioStarter.svelte";
 
   export let data: PageData;
 </script>
+
 <main>
   <AudioStarter>
     <div class="root">
@@ -14,6 +15,7 @@
     </div>
   </AudioStarter>
 </main>
+
 <style>
   main {
     width: 50rem;
@@ -34,15 +36,18 @@
   a {
     display: block;
   }
+  :global(#GRILLE path),
   :global(#grille path) {
-    stroke: #F96806;
+    stroke: #f96806;
     stroke-width: 3px;
   }
+  :global(#FRAGMENTS path),
   :global(#fragments path) {
     cursor: pointer;
-    opacity: .8;
-    fill: #44C17A;
+    opacity: 0.8;
+    /* fill: #44C17A; */
   }
+  :global(#FRAGMENTS path:hover),
   :global(#fragments path:hover) {
     opacity: 1;
   }

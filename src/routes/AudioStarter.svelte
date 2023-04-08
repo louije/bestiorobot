@@ -2,7 +2,7 @@
   import { createEventDispatcher } from "svelte";
   let audioCapable = false;
   let dispatch = createEventDispatcher();
-  
+
   function startAudio() {
     new AudioContext();
     audioCapable = true;
@@ -39,7 +39,7 @@
     border: none;
     padding: 1.5rem;
     font-size: 3rem;
-    border-radius: .5rem;
+    border-radius: 0.5rem;
     cursor: pointer;
   }
   button:active {

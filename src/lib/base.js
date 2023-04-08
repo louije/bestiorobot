@@ -1,4 +1,3 @@
-
 function fragmentPath(monster, phrase, child, fragment) {
   const paddedChild = String(child).padStart(3, "0");
   const paddedPhrase = String(phrase).padStart(3, "0");
