@@ -40,6 +40,9 @@
   function getFragments() {
     if (!svg) { return; }
     const fragmentElements = [...svg.querySelectorAll<SVGPathElement>("#fragments path")];
+    fragmentElements.forEach(f => {
+      f.id = f.id.replaceAll("_x5F", "");
+    });
     fragments = fragmentElements.sort((a: SVGPathElement, b: SVGPathElement) => {
       return getPathX(a) - getPathX(b);
     });
@@ -47,11 +50,14 @@
   
   function loadSounds() {
     const [monster, phraseNum, child] = phrase.split("_");
-    const useIDs = (child === "mix");
+    const useIDs = isNaN(parseInt(child));
     let soundPaths: Array<string> = [];
     
     if (useIDs) {
-      soundPaths = fragments.map(f => soundFileFor(f.id));
+      soundPaths = fragments.map(f => {
+        const id = f.id.replaceAll("_x5F", "");
+        return soundFileFor(id);
+      });
     } else {
       soundPaths = fragments.map((f, i) => { return fragmentPath(monster, phraseNum, child, i + 1) });
     }
@@ -111,7 +117,6 @@
   :global(#fragments path) {
     cursor: pointer;
     opacity: .8;
-    fill: #44C17A;
   }
   :global(#fragments path:hover) {
     opacity: 1;
