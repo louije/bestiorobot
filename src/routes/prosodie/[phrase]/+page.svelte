@@ -124,6 +124,7 @@
     width: 100%;
     height: 100%;
   }
+  :global(#AXE path),
   :global(#GRILLE path),
   :global(#grille path) {
     stroke: #f96806;
