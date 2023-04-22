@@ -64,7 +64,7 @@
         break;
     }
     elements = [
-      ...svg.querySelectorAll<SVGGElement>("#FRAGMENTS >" + " g[id]"), // weird syntax because the highlighting is off otherwise.
+      ...svg.querySelectorAll<SVGGElement>(query), // weird syntax because the highlighting is off otherwise.
     ];
     elements.forEach((e) => {
       e.id = cleanupID(e.id);
