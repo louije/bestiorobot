@@ -1,16 +1,17 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { fragmentPath, soundFileFor } from "$lib/base";
+  import { soundFileFor } from "$lib/base";
 
   export let phrase: string;
   export let file: () => Promise<any>;
+  export let level: number;
   
   let loadingIteration = 0;
 
   let root: HTMLElement;
   let boardComponent: any;
   let svg: SVGSVGElement | null;
-  let fragments: Array<SVGPathElement>;
+  let elements: Array<SVGElement>;
   let sounds: Array<HTMLAudioElement>;
 
   onMount(async () => {
@@ -33,52 +34,56 @@
 
   function prosodize() {
     cleanupSVG();
-    getFragments();
+    getElements();
     loadSounds();
     addEvents();
   }
 
   function cleanupSVG() {
     // do stuff with viewBox, etc.
+    const barre = svg?.querySelector("#BARRE");
+    if (barre) {
+      barre.setAttribute("x1", "0");
+      barre.setAttribute("x2", "0");
+    }
   }
 
-  function getFragments() {
-    if (!svg) {
-      return;
+  function cleanupID(id: string): string {
+    return id.replaceAll("_x5F", "").replaceAll("__", "_").replace(/_\d{4,}_$/, "");
+  }
+  
+  function getElements() {
+    if (!svg) { return;}
+    let query: string;
+    switch(level) {
+      case 1:
+        query = "#FRAGMENTS > g[id]";
+        break;
+      default:
+        query = "#FRAGMENTS path";
+        break;
     }
-    const fragmentElements = [
-      ...svg.querySelectorAll<SVGPathElement>("#fragments path, #FRAGMENTS path")
+    elements = [
+      ...svg.querySelectorAll<SVGGElement>("#FRAGMENTS >" + " g[id]"), // weird syntax because the highlighting is off otherwise.
     ];
-    fragmentElements.forEach((f) => {
-      f.id = f.id.replaceAll("_x5F", "").replaceAll("__", "_").replace(/_\d{4,}_$/, "");
-    });
-    fragments = fragmentElements.sort((a: SVGPathElement, b: SVGPathElement) => {
-      return getPathX(a) - getPathX(b);
+    elements.forEach((e) => {
+      e.id = cleanupID(e.id);
     });
   }
 
   function loadSounds() {
-    const [monster, phraseNum, child] = phrase.split("_");
-    const useIDs = true; //isNaN(parseInt(child));
     let soundPaths: Array<string> = [];
 
-    if (useIDs) {
-      soundPaths = fragments.map((f) => {
-        const id = f.id.replaceAll("_x5F", "");
-        return soundFileFor(id);
-      });
-    } else {
-      soundPaths = fragments.map((f, i) => {
-        return fragmentPath(monster, phraseNum, child, i + 1);
-      });
-    }
+    soundPaths = elements.map((e) => {
+      return soundFileFor(e.id);
+    });
 
     sounds = soundPaths.map((p, idx) => {
       const audio = document.createElement("audio") as HTMLAudioElement;
       audio.src = p;
       audio.id = `audio_${idx}`;
       audio.addEventListener("canplaythrough", (e) => {
-        console.log("loaded", e.target, e);
+        // console.log("loaded", e.target, e);
       });
       audio.hidden = true;
       root.append(audio);
@@ -87,12 +92,49 @@
   }
 
   function addEvents() {
-    fragments.forEach((f, i) => {
-      f.addEventListener("click", () => {
+    if (level === 1) {
+      toggleAllOnClick();
+    } else {
+      startOnHoverAndClick();
+    }
+  }
+  
+  function isPlaying(): boolean {
+    return sounds.map(s => s.paused).some(p => p === false);
+  }
+
+  function toggleAllOnClick() {  
+    svg?.addEventListener("click", () => {
+      const maxDuration = Math.max(...sounds.map(s => s.duration));
+      root.style.setProperty("--duration", `${maxDuration}s`);
+      
+      if (isPlaying()) {
+        svg?.classList.remove("is-playing");
+        sounds.forEach((s) => {
+          s.pause();
+          s.fastSeek(0);
+        });
+      } else {
+        svg?.classList.add("is-playing");
+        sounds.forEach(s => s.play());
+      }
+    });
+    
+    sounds.forEach((s) => {
+      s.addEventListener("ended", () => {
+        if (!isPlaying()) {
+          svg?.classList.remove("is-playing");
+        }
+      });
+    })
+  }
+  function startOnHoverAndClick() {
+    elements.forEach((e, i) => {
+      e.addEventListener("click", () => {
         console.log(i);
         sounds[i].play();
       });
-      f.addEventListener("mouseenter", () => {
+      e.addEventListener("mouseenter", () => {
         console.log(i);
         sounds[i].play();
       });
@@ -106,35 +148,46 @@
     }
     return parseInt(shape.split(",")[0].replace("M", ""));
   }
+  
+  function rootClass(): string {
+    const levelTag = (level) ? `${level}` : "other";
+    return `root level-${levelTag}`;
+  }
 </script>
 
-<div class="root" bind:this={root}>
+<div class={rootClass()} bind:this={root}>
   <svelte:component this={boardComponent} />
 </div>
 
-<style global>
+<style>
   .root {
     display: flex;
     width: 100%;
     height: 100%;
+    padding: 4rem;
   }
   :global(.root svg) {
     width: 100%;
   }
-
   :global(#AXE path),
-  :global(#GRILLE path),
-  :global(#grille path) {
-    stroke: #f96806;
+  :global(#BARRE),
+  :global(#GRILLE path) {
     stroke-width: 3px;
+    stroke-linecap: round;
   }
-  :global(#FRAGMENTS path),
-  :global(#fragments path) {
+  :global(#FRAGMENTS path) {
     cursor: pointer;
     opacity: 0.8;
   }
-  :global(#FRAGMENTS path:hover),
-  :global(#fragments path:hover) {
+  :global(#FRAGMENTS path:hover) {
     opacity: 1;
   }
+  :global(#BARRE) {
+    transition: transform .33s linear; 
+  }
+  :global(.is-playing #BARRE) {
+    transform: translateX(100%);
+    transition: transform var(--duration) linear;
+  }
+  
 </style>

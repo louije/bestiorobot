@@ -5,7 +5,7 @@
 </script>
 
 <main>
-  <Board phrase={data.phrase} file={data.file} />
+  <Board phrase={data.phrase} file={data.file} level={data.level} />
 </main>
 
 <style>
@@ -14,5 +14,4 @@
     height: 100vh;
     display: flex;
   }
-
 </style>
