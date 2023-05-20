@@ -112,7 +112,7 @@
         svg?.classList.remove("is-playing");
         sounds.forEach((s) => {
           s.pause();
-          s.fastSeek(0);
+          s.currentTime = 0;
         });
       } else {
         svg?.classList.add("is-playing");
