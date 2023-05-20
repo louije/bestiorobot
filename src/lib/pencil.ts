@@ -1,13 +1,15 @@
 export class Pencil {
   svg: SVGSVGElement;
-  root: SVGGElement;
   drawing: Boolean = true;
-  path: SVGElement;
-  prevX: number;
-  prevY: number;
+  stateSetter: Function;
+  root?: SVGGElement;
+  path?: SVGElement;
+  prevX?: number;
+  prevY?: number;
 
-  constructor(svg: SVGSVGElement) {
+  constructor(svg: SVGSVGElement, stateSetter: Function) {
     this.svg = svg;
+    this.stateSetter = stateSetter;
     this.createRoot();
     this.addEventListeners();
   }
@@ -20,6 +22,7 @@ export class Pencil {
   
   addEventListeners() {
     this.svg.addEventListener("mousemove", this.mousemove.bind(this));
+    this.svg.addEventListener("mouseleave", this.stopDrawing.bind(this));
   }
   
   createPath(x: number, y: number) {
@@ -32,45 +35,48 @@ export class Pencil {
     return newPath;
   }
   
-  getSVGCoordinates(e: Event) {
+  getSVGCoordinates(e: MouseEvent) {
     const point = this.svg.createSVGPoint();
     point.x = e.clientX;
     point.y = e.clientY;
-    const svgPoint = point.matrixTransform(this.svg.getScreenCTM().inverse());
+    const svgPoint = point.matrixTransform(this.svg.getScreenCTM()!.inverse());
     return svgPoint;
   }
   
-  startDrawing(e: Event) {
+  startDrawing(e: MouseEvent) {
     this.drawing = true;
+    this.stateSetter(this.drawing);
+    
     const point = this.getSVGCoordinates(e);
     this.prevX = point.x;
     this.prevY = point.y;
     
     this.path = this.createPath(this.prevX, this.prevY);
-    this.root.appendChild(this.path);
+    this.root!.appendChild(this.path);
   }
   
   stopDrawing() {
-    this.prevX = null;
-    this.prevY = null;
-    this.path = null;
+    this.prevX = undefined;
+    this.prevY = undefined;
+    this.path = undefined;
     this.drawing = false;
+    this.stateSetter(this.drawing);
   }
   
-  mousemove(e: Event) {
+  mousemove(e: MouseEvent) {
     if (!this.drawing) { return; }
     if (!this.path || !this.prevX || !this.prevY) {
       this.startDrawing(e);
     }
-    const d = this.path.getAttribute("d");
+    const d = this.path!.getAttribute("d");
     console.log(e);
     const point = this.getSVGCoordinates(e);
     const newX = point.x;
     const newY = point.y;
 
-    const midX = (this.prevX + newX) / 2;
-    const midY = (this.prevY + newY) / 2;
-    this.path.setAttribute("d", `${d} Q${this.prevX},${this.prevY} ${midX},${midY}`);
+    const midX = (this.prevX! + newX) / 2;
+    const midY = (this.prevY! + newY) / 2;
+    this.path!.setAttribute("d", `${d} Q${this.prevX},${this.prevY} ${midX},${midY}`);
     this.prevX = newX;
     this.prevY = newY;
   }

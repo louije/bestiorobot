@@ -47,7 +47,11 @@
     loadSounds();
     setupInteractions();
     
-    pencil = new Pencil(svg);
+    pencil = new Pencil(svg, setDrawing);
+  }
+  
+  function setDrawing(newValue: boolean) {
+    isDrawing = newValue;
   }
 
   function cleanupSVG() {
