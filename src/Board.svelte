@@ -1,10 +1,11 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { soundFileFor } from "$lib/base";
+  import { Pencil } from "$lib/pencil";
 
   export let phrase: string;
   export let file: () => Promise<any>;
-  export let level: number;
+  export let level: number | undefined;
   
   let loadingIteration = 0;
 
@@ -13,10 +14,15 @@
   let svg: SVGSVGElement | null;
   let elements: Array<SVGElement>;
   let sounds: Array<HTMLAudioElement>;
+  
+  let isDrawing: boolean = (level !== 1 && level !== 3);
+  let pencil: Pencil;
+  $: { if (pencil) { pencil.drawing = isDrawing; }; console.log(isDrawing) }
 
   onMount(async () => {
     const module = await file();
     boardComponent = module.default;
+    console.log("mounting", phrase);
     requestAnimationFrame(waitForSVG);
   });
 
@@ -25,18 +31,23 @@
     if (!svg) {
       loadingIteration += 1;
       if (loadingIteration > 16) {
+        console.error("Couldn’t load svg file", phrase, file, boardComponent);
         return;
       }
       return requestAnimationFrame(waitForSVG);
     }
-    prosodize();
+    console.log("mounted", phrase, svg);
+    setup();
   }
 
-  function prosodize() {
+  function setup() {
+    if (!svg) return;
     cleanupSVG();
     getElements();
     loadSounds();
-    addEvents();
+    setupInteractions();
+    
+    pencil = new Pencil(svg);
   }
 
   function cleanupSVG() {
@@ -63,9 +74,7 @@
         query = "#FRAGMENTS path";
         break;
     }
-    elements = [
-      ...svg.querySelectorAll<SVGGElement>(query), // weird syntax because the highlighting is off otherwise.
-    ];
+    elements = [...svg.querySelectorAll<SVGGElement>(query)];
     elements.forEach((e) => {
       e.id = cleanupID(e.id);
     });
@@ -91,7 +100,7 @@
     });
   }
 
-  function addEvents() {
+  function setupInteractions() {
     if (level === 1) {
       toggleAllOnClick();
     } else {
@@ -157,10 +166,18 @@
 
 <div class={rootClass()} bind:this={root}>
   <svelte:component this={boardComponent} />
+  <div class="buttons">
+    <div class="buttons-drawing">
+      <input type="checkbox" id="is-drawing" bind:checked={isDrawing} hidden>
+      <label for="is-drawing">✐</label>
+    </div>
+  </div>
 </div>
 
 <style>
   .root {
+    position: relative;
+    z-index: 0;
     display: flex;
     width: 100%;
     height: 100%;
@@ -189,5 +206,43 @@
     transform: translateX(100%);
     transition: transform var(--duration) linear;
   }
+  :global(.pencil-mark) {
+    stroke-width: .75px;
+    stroke: #f86806;
+    stroke-opacity: .88;
+    stroke-linecap: round;
+    fill: none;
+  }
   
+  .buttons {
+    position: absolute;
+    bottom: 3rem;
+    right: 3rem;
+    width: 10rem;
+    height: 5rem;
+  }
+  .buttons-drawing label {
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    border-radius: 50%;
+    background: white;
+    border: 2.5px solid #f86806;
+    transition: all .5s cubic-bezier(0.075, 0.82, 0.165, 1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, .25);
+  }
+  .buttons-drawing :checked + label {
+    background: #f86806;
+    border: 2.5px solid white;
+    color: white;
+  }
+
 </style>
