@@ -2,7 +2,7 @@ export class Pencil {
   svg: SVGSVGElement;
   _drawing: Boolean = true;
   stateSetter: Function;
-  root?: SVGGElement;
+  root!: SVGGElement;
   path?: SVGElement;
   prevX?: number;
   prevY?: number;
@@ -47,28 +47,34 @@ export class Pencil {
   }
   
   getSVGCoordinates(e: MouseEvent) {
-    const point = this.svg.createSVGPoint();
-    point.x = e.clientX;
-    point.y = e.clientY;
-    const svgPoint = point.matrixTransform(this.svg.getScreenCTM()!.inverse());
-    return svgPoint;
+    const point = new DOMPoint(e.clientX, e.clientY);
+    const screenCTM = this.svg.getScreenCTM();
+    const invertedMatrix = screenCTM!.inverse();
+    const transformedPoint = point.matrixTransform(invertedMatrix);
+    const truncatedPoint = new DOMPoint(decimals(transformedPoint.x, 2), decimals(transformedPoint.y, 2));
+    return truncatedPoint;
   }
   
-  startDrawing(e: MouseEvent) {
-    this.drawing = true;
-    
+  startDrawing(e: MouseEvent) {    
     const point = this.getSVGCoordinates(e);
     this.prevX = point.x;
     this.prevY = point.y;
     
     this.path = this.createPath(this.prevX, this.prevY);
-    this.root!.appendChild(this.path);
+    this.root.appendChild(this.path);
   }
   
   stopDrawing() {
     this.prevX = undefined;
     this.prevY = undefined;
     this.path = undefined;
+  }
+  
+  clearDrawing() {
+    this.root.replaceChildren();
+    if (this.drawing) {
+      this.stopDrawing();
+    }
   }
   
   mousemove(e: MouseEvent) {
@@ -87,4 +93,8 @@ export class Pencil {
     this.prevX = newX;
     this.prevY = newY;
   }
+}
+
+function decimals(number: number, places: number): number {
+  return Number(number.toFixed(places));
 }

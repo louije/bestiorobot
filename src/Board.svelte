@@ -180,7 +180,8 @@
   <div class="buttons">
     <div class="buttons-drawing">
       <input type="checkbox" id="is-drawing" bind:checked={isDrawing} hidden>
-      <label for="is-drawing"></label>
+      <label class="button draw" for="is-drawing"></label>
+      <button on:click={() => { pencil.clearDrawing() } } class="button clear">🧽</button>
     </div>
   </div>
 </div>
@@ -232,10 +233,13 @@
     position: absolute;
     bottom: 3rem;
     right: 3rem;
-    width: 10rem;
     height: 5rem;
   }
-  .buttons-drawing label {
+  .buttons-drawing {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .button {
     z-index: 1;
     cursor: pointer;
     position: relative;
@@ -246,24 +250,30 @@
     border-radius: 50%;
     box-shadow: 0 0 10px rgba(0, 0, 0, .25);
   }
-  .buttons-drawing label::before {
-    content: "✐";
-    position: absolute;
+  .button + .button {
+    margin-left: 1rem;
+  }
+  .buttons-drawing label::before,
+  .button.clear {
+    color: white;
+    background: #f86806;
+    border-radius: 50%;
+    border: 2.5px solid white;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     font-size: 1.5rem;
     font-weight: 700;
+  }
+  .buttons-drawing label::before {
+    content: "✐";
+    position: absolute;
     z-index: 1;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    color: white;
-    background: #f86806;
-    border-radius: 50%;
-    border: 2.5px solid white;
     transition: all .5s cubic-bezier(0.075, 0.82, 0.165, 1);
   }
   .buttons-drawing label::after {
@@ -294,6 +304,9 @@
   .buttons-drawing :checked + label::after {
     border: 1px solid #f86806aa;
     content: "Appuyez sur espace pour arrêter de dessiner";
+  }
+  .button.clear {
+    
   }
 
 </style>
