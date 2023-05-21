@@ -17,14 +17,19 @@
   
   let isDrawing: boolean = (level !== 1 && level !== 3);
   let pencil: Pencil;
-  $: { if (pencil) { pencil.drawing = isDrawing; }; console.log(isDrawing) }
+  $: { if (pencil) { pencil.drawing = isDrawing; } }
 
   onMount(async () => {
     const module = await file();
     boardComponent = module.default;
-    console.log("mounting", phrase);
+    // console.log("mounting", phrase);
     requestAnimationFrame(waitForSVG);
   });
+  
+  function handleKeyDown(e: KeyboardEvent) {
+    if (e.code !== "Space") { return; }
+    isDrawing = !isDrawing;
+  }
 
   function waitForSVG() {
     svg = root.querySelector("svg");
@@ -36,7 +41,7 @@
       }
       return requestAnimationFrame(waitForSVG);
     }
-    console.log("mounted", phrase, svg);
+    // console.log("mounted", phrase, svg);
     setup();
   }
 
@@ -144,11 +149,9 @@
   function startOnHoverAndClick() {
     elements.forEach((e, i) => {
       e.addEventListener("click", () => {
-        console.log(i);
         sounds[i].play();
       });
       e.addEventListener("mouseenter", () => {
-        console.log(i);
         sounds[i].play();
       });
     });
@@ -167,6 +170,8 @@
     return `root level-${levelTag}`;
   }
 </script>
+
+<svelte:window on:keydown={handleKeyDown} />
 
 <div class={rootClass()} bind:this={root}>
   <svelte:component this={boardComponent} />

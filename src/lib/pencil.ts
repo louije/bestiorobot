@@ -1,11 +1,22 @@
 export class Pencil {
   svg: SVGSVGElement;
-  drawing: Boolean = true;
+  _drawing: Boolean = true;
   stateSetter: Function;
   root?: SVGGElement;
   path?: SVGElement;
   prevX?: number;
   prevY?: number;
+
+  get drawing(): Boolean {
+    return this._drawing;
+  }
+  set drawing(newValue: Boolean) {
+    this._drawing = newValue;
+    this.stateSetter(this.drawing);
+    if (!this._drawing) {
+      this.stopDrawing();
+    }
+  }
 
   constructor(svg: SVGSVGElement, stateSetter: Function) {
     this.svg = svg;
@@ -22,7 +33,7 @@ export class Pencil {
   
   addEventListeners() {
     this.svg.addEventListener("mousemove", this.mousemove.bind(this));
-    this.svg.addEventListener("mouseleave", this.stopDrawing.bind(this));
+    this.svg.addEventListener("mouseleave", () => { this.drawing = false; });
   }
   
   createPath(x: number, y: number) {
@@ -45,7 +56,6 @@ export class Pencil {
   
   startDrawing(e: MouseEvent) {
     this.drawing = true;
-    this.stateSetter(this.drawing);
     
     const point = this.getSVGCoordinates(e);
     this.prevX = point.x;
@@ -59,8 +69,6 @@ export class Pencil {
     this.prevX = undefined;
     this.prevY = undefined;
     this.path = undefined;
-    this.drawing = false;
-    this.stateSetter(this.drawing);
   }
   
   mousemove(e: MouseEvent) {
@@ -69,7 +77,6 @@ export class Pencil {
       this.startDrawing(e);
     }
     const d = this.path!.getAttribute("d");
-    console.log(e);
     const point = this.getSVGCoordinates(e);
     const newX = point.x;
     const newY = point.y;
