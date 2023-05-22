@@ -1,4 +1,4 @@
-export class Pencil {
+export default class Pencil {
   svg: SVGSVGElement;
   _drawing: Boolean = true;
   stateSetter: Function;

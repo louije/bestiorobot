@@ -1,0 +1,43 @@
+.root svg {
+  width: 100%;
+}
+#AXE path,
+#BARRE,
+#GRILLE path {
+  stroke-width: 3px;
+  stroke-linecap: round;
+}
+#FRAGMENTS path {
+  cursor: pointer;
+  opacity: 0.8;
+}
+#FRAGMENTS path:hover {
+  opacity: 1;
+}
+#BARRE {
+  transition: transform .33s linear; 
+}
+.is-playing #BARRE {
+  transform: translateX(100%);
+  transition: transform var(--duration) linear;
+}
+.pencil-mark {
+  stroke-width: .75px;
+  stroke: #f86806;
+  stroke-opacity: .88;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.rotor {
+  animation-duration: var(--duration, 10s);
+  animation-timing-function: linear;
+  animation-iteration-count: 1;
+  animation-name: rotate;
+  transform-origin: var(--origin);
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}

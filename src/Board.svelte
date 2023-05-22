@@ -1,11 +1,11 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { soundFileFor } from "$lib/base";
-  import { Pencil } from "$lib/pencil";
+  import Pencil from "$lib/pencil";
 
   export let phrase: string;
   export let file: () => Promise<any>;
-  export let level: number | undefined;
+  export let level: number | undefined;
   
   let loadingIteration = 0;
 
@@ -18,6 +18,7 @@
   let isDrawing: boolean = (level !== 1 && level !== 3);
   let pencil: Pencil;
   $: { if (pencil) { pencil.drawing = isDrawing; } }
+  
   
   let rootClass: string = "";
   $: {
@@ -163,13 +164,22 @@
       });
     });
   }
-
+  
   function getPathX(path: Element): number {
     const shape = path.getAttribute("d");
     if (!shape) {
       return 0;
     }
     return parseInt(shape.split(",")[0].replace("M", ""));
+  }
+  
+  function playSoundFor(element: SVGElement, force: Boolean = false) {
+    const index = elements.indexOf(element);
+    if (index !== -1 && sounds[index]) {
+      if (force || sounds[index].paused === true) {
+        sounds[index].play();
+      }
+    }
   }
 </script>
 
@@ -197,36 +207,6 @@
   }
   .root.is-drawing {
     cursor: url("/marker.svg"), url("/marker.png"), auto;
-  }
-  :global(.root svg) {
-    width: 100%;
-  }
-  :global(#AXE path),
-  :global(#BARRE),
-  :global(#GRILLE path) {
-    stroke-width: 3px;
-    stroke-linecap: round;
-  }
-  :global(#FRAGMENTS path) {
-    cursor: pointer;
-    opacity: 0.8;
-  }
-  :global(#FRAGMENTS path:hover) {
-    opacity: 1;
-  }
-  :global(#BARRE) {
-    transition: transform .33s linear; 
-  }
-  :global(.is-playing #BARRE) {
-    transform: translateX(100%);
-    transition: transform var(--duration) linear;
-  }
-  :global(.pencil-mark) {
-    stroke-width: .75px;
-    stroke: #f86806;
-    stroke-opacity: .88;
-    stroke-linecap: round;
-    fill: none;
   }
   
   .buttons {
@@ -267,7 +247,7 @@
     font-weight: 700;
   }
   .buttons-drawing label::before {
-    content: "✐";
+    content: "✏️";
     position: absolute;
     z-index: 1;
     top: 0;
@@ -304,9 +284,6 @@
   .buttons-drawing :checked + label::after {
     border: 1px solid #f86806aa;
     content: "Appuyez sur espace pour arrêter de dessiner";
-  }
-  .button.clear {
-    
   }
 
 </style>
