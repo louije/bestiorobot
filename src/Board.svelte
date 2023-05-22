@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { soundFileFor } from "$lib/base";
   import Pencil from "$lib/pencil";
+  import Circulator from "$lib/level-three";
 
   export let phrase: string;
   export let file: () => Promise<any>;
@@ -19,6 +20,7 @@
   let pencil: Pencil;
   $: { if (pencil) { pencil.drawing = isDrawing; } }
   
+  let circulator: Circulator;
   
   let rootClass: string = "";
   $: {
@@ -120,6 +122,13 @@
   function setupInteractions() {
     if (level === 1) {
       toggleAllOnClick();
+    } else if (level === 3) {
+      startOnHoverAndClick();
+      const axis = svg!.querySelector<SVGElement>("#AXE");
+      const fragments = svg!.querySelector<SVGElement>("#FRAGMENTS");
+      if (!axis || !fragments) { return; }
+      circulator = new Circulator(fragments, axis);
+      console.log(circulator);
     } else {
       startOnHoverAndClick();
     }
