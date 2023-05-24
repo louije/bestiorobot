@@ -125,8 +125,8 @@
           resolve(audio);
         } else {
           i++;
-          if (i > 15) {
-            reject(`too long ${i}, ${audio.src}`);
+          if (i > 9) {
+            reject(`loading ${audio.src} took too long, file probably missing.`);
           } else {
             setTimeout(checkReadyState, 100);
           }
@@ -155,7 +155,7 @@
     if (!axis || !fragments) { return; }
     
     await soundsLoaded();
-    const durations = sounds.map(s => s.duration);
+    const durations = sounds.map(s => s.duration).filter(d => !isNaN(d));
     // const averagePlayTime = durations.reduce((total, val) => { return total + val }, 0);
     const medianPlayTime = percentile(durations, 0.5) * sounds.length;
     // const seventyFivePlayTime = percentile(durations, 0.75) * sounds.length;
