@@ -30,14 +30,9 @@
 }
 
 .rotor {
-  animation-duration: var(--duration, 10s);
-  animation-timing-function: linear;
-  animation-iteration-count: 1;
-  animation-name: rotate;
+  /* animation-duration: var(--duration, 10s); */
+  /* animation-timing-function: linear; */
+  /* animation-iteration-count: 1; */
+  /* animation-name: rotate; */
   transform-origin: var(--origin);
-}
-
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(-360deg); }
 }

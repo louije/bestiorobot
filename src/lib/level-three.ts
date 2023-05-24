@@ -1,29 +1,73 @@
 export default class Circulator {
   animating: Boolean = false;
   center: { x: number, y: number };
-  group: SVGElement;
-  elements: Array<SVGElement>;
-  elementsMap: Map<number, SVGElement>;
-  currentPath: SVGElement;
+  elements: Array<SVGPathElement>;
+  elementsMap!: Map<number, SVGPathElement>;
+  currentPathId: string = "";
   currentAngle: number = 0;
+  animation!: Animation;
   
-  constructor(elementsGroup: SVGElement, axis: SVGElement) {
+  constructor(
+    public group: SVGElement,
+    axis: SVGCircleElement,
+    public player: Function,
+    public audioLength: number
+  ) {
     this.center = this.pathCenter(axis);
-    this.group = elementsGroup;
-    this.elements = [...elementsGroup.children];
+    this.elements = <SVGPathElement[]>[...group.children];
+    this.player = player;
     
     this.prepareAnimation();
     this.computeAngles();
-    console.log(0, this.closest(0));
-    console.log(20, this.closest(20));
-    console.log(350, this.closest(350));
-    console.log(270, this.closest(270));
+    
+    console.log(this.audioLength);
+    // this.animate()
   }
   
   prepareAnimation() {
     this.group.classList.add("rotor");
     this.group.style.setProperty("--origin", `${this.center.x}px ${this.center.y}px`);
+    const keyframes = [
+      { transform: 'rotate(0deg)' },
+      { transform: 'rotate(-360deg)' }
+    ];
+    const animationOptions = {
+      duration: this.audioLength * 1000,
+      iterations: 1,
+      easing: "linear",
+    };
+    const effect = new KeyframeEffect(this.group, keyframes, animationOptions);
+    this.animation = new Animation(effect);
   }
+  animate() {
+    this.animation.play();
+    this.tick();
+  }
+  pause() {
+    this.animation.pause();
+    this.player(this.currentPathId, "pause");
+  }
+  tick() {
+    const progress = this.animation.effect!.getComputedTiming().progress || 0;
+    const angle = (progress * 360) % 360;
+    const target = this.closest(angle);
+    if (!target) {
+      return;
+    }
+    const pathId = target.id;
+    
+    if (pathId !== this.currentPathId) {
+      this.currentPathId = pathId;
+      this.play();
+    }
+    
+    if (this.animation.playState !== "running") { return; }
+    requestAnimationFrame(this.tick.bind(this));
+  }
+  play() {
+    this.player(this.currentPathId);
+  }
+  
   computeAngles() {
     const map = new Map();
     this.elements.forEach(el => {
@@ -32,12 +76,12 @@ export default class Circulator {
       map.set(angle, el);
     });
     
-    this.elementsMap = new Map<number, SVGElement>(
+    this.elementsMap = new Map<number, SVGPathElement>(
       Array.from(map.entries()).sort((a, b) => a[0] - b[0])
     );
 
   }
-  pathCenter(path: SVGElement): { x: number, y: number } {
+  pathCenter(path: SVGGraphicsElement): { x: number, y: number } {
     const rect = path.getBBox();
     const x = rect.x + (rect.width / 2);
     const y = rect.y + (rect.height / 2);
@@ -51,7 +95,7 @@ export default class Circulator {
     return (degrees + 360) % 360;
   }
   
-  closest(targetAngle: number): Element {
+  closest(targetAngle: number): Element | null {
     const angles = Array.from(this.elementsMap.keys());
     let left = 0;
     let right = angles.length - 1;
@@ -65,6 +109,10 @@ export default class Circulator {
       } else {
         right = mid;
       }
+    }
+    
+    if (targetAngle > angles[angles.length - 1]) {
+      return;
     }
     
     // Check which angle is closer (left or left-1) and return corresponding element

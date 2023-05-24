@@ -1,3 +1,5 @@
+import { getSVGCoordinates } from "$lib/util";
+
 export default class Pencil {
   svg: SVGSVGElement;
   _drawing: Boolean = true;
@@ -46,17 +48,8 @@ export default class Pencil {
     return newPath;
   }
   
-  getSVGCoordinates(e: MouseEvent) {
-    const point = new DOMPoint(e.clientX, e.clientY);
-    const screenCTM = this.svg.getScreenCTM();
-    const invertedMatrix = screenCTM!.inverse();
-    const transformedPoint = point.matrixTransform(invertedMatrix);
-    const truncatedPoint = new DOMPoint(decimals(transformedPoint.x, 2), decimals(transformedPoint.y, 2));
-    return truncatedPoint;
-  }
-  
   startDrawing(e: MouseEvent) {    
-    const point = this.getSVGCoordinates(e);
+    const point = getSVGCoordinates(e.clientX, e.clientY, this.svg);
     this.prevX = point.x;
     this.prevY = point.y;
     
@@ -83,7 +76,7 @@ export default class Pencil {
       this.startDrawing(e);
     }
     const d = this.path!.getAttribute("d");
-    const point = this.getSVGCoordinates(e);
+    const point = getSVGCoordinates(e.clientX, e.clientY, this.svg);
     const newX = point.x;
     const newY = point.y;
 
@@ -93,8 +86,4 @@ export default class Pencil {
     this.prevX = newX;
     this.prevY = newY;
   }
-}
-
-function decimals(number: number, places: number): number {
-  return Number(number.toFixed(places));
 }

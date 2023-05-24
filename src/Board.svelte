@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { soundFileFor } from "$lib/base";
+  import { percentile } from "$lib/util";
   import Pencil from "$lib/pencil";
   import Circulator from "$lib/level-three";
 
@@ -9,7 +10,7 @@
   export let level: number | undefined;
   
   let loadingIteration = 0;
-
+  
   let root: HTMLElement;
   let boardComponent: any;
   let svg: SVGSVGElement | null;
@@ -102,40 +103,88 @@
   function loadSounds() {
     let soundPaths: Array<string> = [];
 
-    soundPaths = elements.map((e) => {
-      return soundFileFor(e.id);
-    });
-
-    sounds = soundPaths.map((p, idx) => {
+    sounds = elements.map((e) => {
+      const path = soundFileFor(e.id);
       const audio = document.createElement("audio") as HTMLAudioElement;
-      audio.src = p;
-      audio.id = `audio_${idx}`;
-      audio.addEventListener("canplaythrough", (e) => {
+      audio.src = path;
+      audio.id = `audio_${e.id}`;
+      // audio.addEventListener("canplaythrough", (e) => {
         // console.log("loaded", e.target, e);
-      });
+      // });
       audio.hidden = true;
       root.append(audio);
       return audio;
     });
   }
+  
+  async function soundsLoaded() {    
+    const canPlayThroughPromises = sounds.map((audio) => new Promise((resolve, reject) => {
+      let i = 0;
+      const checkReadyState = () => {
+        if (audio.readyState >= 4) {
+          resolve(audio);
+        } else {
+          i++;
+          if (i > 15) {
+            reject(`too long ${i}, ${audio.src}`);
+          } else {
+            setTimeout(checkReadyState, 100);
+          }
+        }
+      };
+      checkReadyState();
+    }));
+    
+    return Promise.all(canPlayThroughPromises)
+      .then((loadedAudioElements) => console.log(`All ${loadedAudioElements.length} audio elements can play through`))
+      .catch((error) => console.error('Audio loading error:', error));
+  }
+
 
   function setupInteractions() {
     if (level === 1) {
       toggleAllOnClick();
-    } else if (level === 3) {
-      startOnHoverAndClick();
-      const axis = svg!.querySelector<SVGElement>("#AXE");
-      const fragments = svg!.querySelector<SVGElement>("#FRAGMENTS");
-      if (!axis || !fragments) { return; }
-      circulator = new Circulator(fragments, axis);
-      console.log(circulator);
     } else {
       startOnHoverAndClick();
     }
   }
   
+  async function setupLevelThree() {    
+    const axis = svg!.querySelector<SVGCircleElement>("#AXE circle");
+    const fragments = svg!.querySelector<SVGElement>("#FRAGMENTS");
+    if (!axis || !fragments) { return; }
+    
+    await soundsLoaded();
+    const durations = sounds.map(s => s.duration);
+    // const averagePlayTime = durations.reduce((total, val) => { return total + val }, 0);
+    const medianPlayTime = percentile(durations, 0.5) * sounds.length;
+    // const seventyFivePlayTime = percentile(durations, 0.75) * sounds.length;
+    // console.log("average", averagePlayTime, "median", medianPlayTime, "75", seventyFivePlayTime);
+    circulator = new Circulator(fragments, axis, remotePlayer, medianPlayTime);
+  }
+  
+  async function animateLevelThree() {
+    if (!circulator) {
+      await setupLevelThree();
+    }
+    circulator.animate();
+  }
+  
   function isPlaying(): boolean {
     return sounds.map(s => s.paused).some(p => p === false);
+  }
+  
+  function remotePlayer(fragment: string, command: string = "play") {
+    const sound = document.querySelector<HTMLAudioElement>(`#audio_${fragment}`);
+    if (!sound) {
+      return;
+    }
+    if (command === "play") {
+      sound.play();
+    }
+    if (command === "pause") {
+      sound.pause();
+    }
   }
 
   function toggleAllOnClick() {  
@@ -197,11 +246,19 @@
 <div class={rootClass} bind:this={root}>
   <svelte:component this={boardComponent} />
   <div class="buttons">
-    <div class="buttons-drawing">
-      <input type="checkbox" id="is-drawing" bind:checked={isDrawing} hidden>
-      <label class="button draw" for="is-drawing"></label>
-      <button on:click={() => { pencil.clearDrawing() } } class="button clear">🧽</button>
-    </div>
+    {#if level !== 3 }
+      <div class="buttons-group buttons-drawing">
+        <input type="checkbox" id="is-drawing" bind:checked={isDrawing} hidden>
+        <label class="button draw" for="is-drawing"></label>
+        <button on:click={() => { pencil.clearDrawing() } } class="button clear">🧽</button>
+      </div>
+    {:else}
+      <div class="buttons-group buttons-playpause">
+        <button on:click={animateLevelThree} class="button play">▶️</button>
+        <button on:click={() => { circulator.pause() } } class="button play">⏸️</button>
+        
+      </div>
+    {/if}
   </div>
 </div>
 
@@ -224,7 +281,7 @@
     right: 3rem;
     height: 5rem;
   }
-  .buttons-drawing {
+  .buttons-group {
     display: flex;
     justify-content: flex-end;
   }
@@ -243,7 +300,7 @@
     margin-left: 1rem;
   }
   .buttons-drawing label::before,
-  .button.clear {
+  .button {
     color: white;
     background: #f86806;
     border-radius: 50%;
