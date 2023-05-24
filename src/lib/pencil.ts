@@ -33,7 +33,7 @@ export default class Pencil {
   
   addEventListeners() {
     this.svg.addEventListener("mousemove", this.mousemove.bind(this));
-    this.svg.addEventListener("mouseleave", () => { this.drawing = false; });
+    this.svg.addEventListener("mouseleave", this.stopDrawing.bind(this));
   }
   
   createPath(x: number, y: number) {
