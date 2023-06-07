@@ -1,5 +1,4 @@
 export default class Circulator {
-  animating: Boolean = false;
   center: { x: number, y: number };
   elements: Array<SVGPathElement>;
   elementsMap!: Map<number, SVGPathElement>;
@@ -20,8 +19,12 @@ export default class Circulator {
     this.prepareAnimation();
     this.computeAngles();
     
-    console.log(this.audioLength);
+    // console.log(this.audioLength);
     // this.animate()
+  }
+  
+  get animating(): Boolean {
+    return this.animation.playState === "running";
   }
   
   prepareAnimation() {
@@ -112,7 +115,7 @@ export default class Circulator {
     }
     
     if (targetAngle > angles[angles.length - 1]) {
-      return;
+      return null;
     }
     
     // Check which angle is closer (left or left-1) and return corresponding element
