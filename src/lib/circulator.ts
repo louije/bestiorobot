@@ -1,35 +1,98 @@
+import { getSVGCoordinates } from "$lib/util";
+
 export default class Circulator {
   center: { x: number, y: number };
+  parent: SVGSVGElement;
   elements: Array<SVGPathElement>;
   elementsMap!: Map<number, SVGPathElement>;
   currentPathId: string = "";
   currentAngle: number = 0;
   animation!: Animation;
+  scratching: Boolean = false;
+  lastXY: { x: number, y: number };
   
   constructor(
-    public group: SVGElement,
-    axis: SVGCircleElement,
+    public group: SVGGraphicsElement,
+    public axis: SVGCircleElement,
     public player: Function,
     public audioLength: number
   ) {
     this.center = this.pathCenter(axis);
     this.elements = <SVGPathElement[]>[...group.children];
-    this.player = player;
+    this.parent = this.group.closest("svg")!;
     
-    this.prepareAnimation();
+    this.prepareElements();
+    this.setupScratchEvents();
     this.computeAngles();
     
-    // console.log(this.audioLength);
-    // this.animate()
+    this.lastXY = { x: this.center.x, y: this.center.y };
   }
   
-  get animating(): Boolean {
-    return this.animation.playState === "running";
-  }
-  
-  prepareAnimation() {
+  prepareElements() {
     this.group.classList.add("rotor");
     this.group.style.setProperty("--origin", `${this.center.x}px ${this.center.y}px`);
+  }
+  
+  // Scratching rotation
+  
+  setupScratchEvents() {
+    const parent = this.group.parentElement!;
+    const radius = this.group.getBBox().width / 2;
+    const rotationTarget = <SVGCircleElement>this.axis.cloneNode();
+    rotationTarget.setAttribute("r", String(radius));
+    rotationTarget.setAttribute("fill", "transparent");
+    parent.prepend(rotationTarget)
+
+    rotationTarget.addEventListener('mousedown', this.startScratching.bind(this));
+    document.addEventListener('mousemove', this.scratch.bind(this));
+    document.addEventListener('mouseup', this.stopScratching.bind(this));
+  }
+  startScratching(e: MouseEvent) {
+    this.scratching = true;
+    if (this.animation) {
+      this.animation.effect = null;
+    }
+    this.lastXY = getSVGCoordinates(e.offsetX, e.offsetY, this.parent);
+  }
+  scratch(e: MouseEvent) {
+    if (!this.scratching) { return; }
+    const { x, y } = getSVGCoordinates(e.offsetX, e.offsetY, this.parent);
+    const delta = { x: x - this.lastXY.x, y: y - this.lastXY.y };
+    const diameter = this.group.getBBox().width;
+    
+    let rotation;
+    let direction;
+    
+    if (Math.abs(delta.x) > Math.abs(delta.y)) {
+      direction = y > diameter / 2.0 ? -1.0 : 1.0;
+      rotation = (delta.x / diameter) * 180.0 * direction;
+    } else {
+      direction = x > diameter / 2.0 ? 1.0 : -0.5;
+      rotation = (delta.y / diameter) * 180.0 * direction;
+    }
+    this.currentAngle += rotation;
+    this.lastXY = { x, y };
+    this.rotate();
+  }
+  
+  
+  rotate() {
+    this.group.style.transform = `rotate(${this.currentAngle}deg)`;
+    this.tick();
+  }
+  stopScratching() {
+    this.scratching = false;
+  }
+
+  // Automatic animation
+
+  get animating(): Boolean {
+    if (this.animation) {
+      return this.animation.playState === "running";
+    }
+    return false;
+  }
+  prepareAnimation() {
     const keyframes = [
       { transform: 'rotate(0deg)' },
       { transform: 'rotate(-360deg)' }
@@ -41,8 +104,11 @@ export default class Circulator {
     };
     const effect = new KeyframeEffect(this.group, keyframes, animationOptions);
     this.animation = new Animation(effect);
-  }
+  }  
   animate() {
+    if (!this.animation || !this.animation.effect) {
+      this.prepareAnimation();
+    }
     this.animation.play();
     this.tick();
   }
@@ -51,8 +117,17 @@ export default class Circulator {
     this.player(this.currentPathId, "pause");
   }
   tick() {
-    const progress = this.animation.effect!.getComputedTiming().progress || 0;
-    const angle = (progress * 360) % 360;
+    let angle;
+    if (this.scratching) {
+      angle = (this.currentAngle < 0) ? Math.abs(this.currentAngle) : 360 - this.currentAngle;
+      console.log(angle)
+    } else if (this.animating) {
+      const progress = this.animation.effect!.getComputedTiming().progress || 0;
+      angle = (progress * 360) % 360;
+    } else {
+      return;
+    }
+    
     const target = this.closest(angle);
     if (!target) {
       return;
@@ -64,8 +139,9 @@ export default class Circulator {
       this.play();
     }
     
-    if (this.animation.playState !== "running") { return; }
-    requestAnimationFrame(this.tick.bind(this));
+    if (this.animating || this.scratching) {
+      requestAnimationFrame(this.tick.bind(this));
+    }
   }
   play() {
     this.player(this.currentPathId);

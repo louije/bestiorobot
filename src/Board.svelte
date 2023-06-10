@@ -3,7 +3,7 @@
   import { soundFileFor } from "$lib/base";
   import { percentile } from "$lib/util";
   import Pencil from "$lib/pencil";
-  import Circulator from "$lib/level-three";
+  import Circulator from "$lib/circulator";
 
   export let phrase: string;
   export let file: () => Promise<any>;
@@ -145,9 +145,11 @@
   }
 
 
-  function setupInteractions() {
+  async function setupInteractions() {
     if (level === 1) {
       toggleAllOnClick();
+    } else if (level === 3) {
+      await setupLevelThree();
     } else {
       startOnHoverAndClick();
     }
