@@ -120,7 +120,6 @@ export default class Circulator {
     let angle;
     if (this.scratching) {
       angle = (this.currentAngle < 0) ? Math.abs(this.currentAngle) : 360 - this.currentAngle;
-      console.log(angle)
     } else if (this.animating) {
       const progress = this.animation.effect!.getComputedTiming().progress || 0;
       angle = (progress * 360) % 360;
