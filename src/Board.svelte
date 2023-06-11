@@ -17,7 +17,7 @@
   let elements: Array<SVGElement>;
   let sounds: Array<HTMLAudioElement>;
 
-  let isDrawing: boolean = level !== 1 && level !== 3;
+  let isDrawing: boolean = false;
   let pencil: Pencil;
   $: {
     if (pencil) {
@@ -245,11 +245,13 @@
   }
   function startOnHoverAndClick() {
     elements.forEach((e, i) => {
-      e.addEventListener("click", () => {
-        sounds[i].play();
-      });
-      e.addEventListener("mouseenter", () => {
-        sounds[i].play();
+      // e.addEventListener("click", () => {
+      //   sounds[i].play();
+      // });
+      e.addEventListener("mouseenter", (e: MouseEvent) => {
+        if (e.buttons > 0) {
+          sounds[i].play();
+        }
       });
     });
   }

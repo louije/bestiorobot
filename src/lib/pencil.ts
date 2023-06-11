@@ -2,7 +2,7 @@ import { getSVGCoordinates } from "$lib/util";
 
 export default class Pencil {
   svg: SVGSVGElement;
-  _drawing: Boolean = true;
+  _drawing: Boolean = false;
   stateSetter: Function;
   root!: SVGGElement;
   path?: SVGElement;
@@ -34,6 +34,8 @@ export default class Pencil {
   }
 
   addEventListeners() {
+    document.addEventListener("mousedown", () => { this.drawing = true; });
+    document.addEventListener("mouseup", () => { this.drawing = false; });
     this.svg.addEventListener("mousemove", this.mousemove.bind(this));
     this.svg.addEventListener("mouseleave", this.stopDrawing.bind(this));
   }
