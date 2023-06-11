@@ -15,16 +15,16 @@
   opacity: 1;
 }
 #BARRE {
-  transition: transform .33s linear; 
+  transition: transform 0.33s linear;
 }
 .is-playing #BARRE {
   transform: translateX(100%);
   transition: transform var(--duration) linear;
 }
 .pencil-mark {
-  stroke-width: .75px;
+  stroke-width: 0.75px;
   stroke: #f86806;
-  stroke-opacity: .88;
+  stroke-opacity: 0.88;
   stroke-linecap: round;
   fill: none;
 }

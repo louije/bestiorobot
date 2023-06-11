@@ -10,26 +10,26 @@ declare global {
 }
 
 // from https://www.npmjs.com/package/@poppanator/sveltekit-svg
-declare module '*.svg?component' {
-  import type { ComponentType, SvelteComponentTyped } from 'svelte';
-  import type { SVGAttributes } from 'svelte/elements';
+declare module "*.svg?component" {
+  import type { ComponentType, SvelteComponentTyped } from "svelte";
+  import type { SVGAttributes } from "svelte/elements";
 
   const content: ComponentType<SvelteComponentTyped<SVGAttributes<SVGSVGElement>>>;
 
   export default content;
 }
 
-declare module '*.svg?src' {
+declare module "*.svg?src" {
   const content: string;
   export default content;
 }
 
-declare module '*.svg?url' {
+declare module "*.svg?url" {
   const content: string;
   export default content;
 }
 
-declare module '*.svg?dataurl' {
+declare module "*.svg?dataurl" {
   const content: string;
   export default content;
 }

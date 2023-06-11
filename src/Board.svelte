@@ -8,25 +8,29 @@
   export let phrase: string;
   export let file: () => Promise<any>;
   export let level: number | undefined;
-  
+
   let loadingIteration = 0;
-  
+
   let root: HTMLElement;
   let boardComponent: any;
   let svg: SVGSVGElement | null;
   let elements: Array<SVGElement>;
   let sounds: Array<HTMLAudioElement>;
-  
-  let isDrawing: boolean = (level !== 1 && level !== 3);
+
+  let isDrawing: boolean = level !== 1 && level !== 3;
   let pencil: Pencil;
-  $: { if (pencil) { pencil.drawing = isDrawing; } }
-  
+  $: {
+    if (pencil) {
+      pencil.drawing = isDrawing;
+    }
+  }
+
   let circulator: Circulator;
-  
+
   let rootClass: string = "";
   $: {
-    const levelTag = (level) ? `${level}` : "other";
-    const drawingTag = (isDrawing) ? " is-drawing" : "";
+    const levelTag = level ? `${level}` : "other";
+    const drawingTag = isDrawing ? " is-drawing" : "";
     rootClass = `root level-${levelTag}${drawingTag}`;
   }
 
@@ -36,9 +40,11 @@
     // console.log("mounting", phrase);
     requestAnimationFrame(waitForSVG);
   });
-  
+
   function handleKeyDown(e: KeyboardEvent) {
-    if (e.code !== "Space") { return; }
+    if (e.code !== "Space") {
+      return;
+    }
     isDrawing = !isDrawing;
   }
 
@@ -62,10 +68,10 @@
     getElements();
     loadSounds();
     setupInteractions();
-    
+
     pencil = new Pencil(svg, setDrawing);
   }
-  
+
   function setDrawing(newValue: boolean) {
     isDrawing = newValue;
   }
@@ -84,13 +90,18 @@
   }
 
   function cleanupID(id: string): string {
-    return id.replaceAll("_x5F", "").replaceAll("__", "_").replace(/_\d{4,}_$/, "");
+    return id
+      .replaceAll("_x5F", "")
+      .replaceAll("__", "_")
+      .replace(/_\d{4,}_$/, "");
   }
-  
+
   function getElements() {
-    if (!svg) { return;}
+    if (!svg) {
+      return;
+    }
     let query: string;
-    switch(level) {
+    switch (level) {
       case 1:
         query = "#FRAGMENTS > g[id]";
         break;
@@ -113,37 +124,41 @@
       audio.src = path;
       audio.id = `audio_${e.id}`;
       // audio.addEventListener("canplaythrough", (e) => {
-        // console.log("loaded", e.target, e);
+      // console.log("loaded", e.target, e);
       // });
       audio.hidden = true;
       root.append(audio);
       return audio;
     });
   }
-  
-  async function soundsLoaded() {    
-    const canPlayThroughPromises = sounds.map((audio) => new Promise((resolve, reject) => {
-      let i = 0;
-      const checkReadyState = () => {
-        if (audio.readyState >= 4) {
-          resolve(audio);
-        } else {
-          i++;
-          if (i > 9) {
-            reject(`loading ${audio.src} took too long, file probably missing.`);
-          } else {
-            setTimeout(checkReadyState, 100);
-          }
-        }
-      };
-      checkReadyState();
-    }));
-    
-    return Promise.all(canPlayThroughPromises)
-      .then((loadedAudioElements) => console.log(`All ${loadedAudioElements.length} audio elements can play through`))
-      .catch((error) => console.error('Audio loading error:', error));
-  }
 
+  async function soundsLoaded() {
+    const canPlayThroughPromises = sounds.map(
+      (audio) =>
+        new Promise((resolve, reject) => {
+          let i = 0;
+          const checkReadyState = () => {
+            if (audio.readyState >= 4) {
+              resolve(audio);
+            } else {
+              i++;
+              if (i > 9) {
+                reject(`loading ${audio.src} took too long, file probably missing.`);
+              } else {
+                setTimeout(checkReadyState, 100);
+              }
+            }
+          };
+          checkReadyState();
+        })
+    );
+
+    return Promise.all(canPlayThroughPromises)
+      .then((loadedAudioElements) =>
+        console.log(`All ${loadedAudioElements.length} audio elements can play through`)
+      )
+      .catch((error) => console.error("Audio loading error:", error));
+  }
 
   async function setupInteractions() {
     if (level === 1) {
@@ -154,28 +169,30 @@
       startOnHoverAndClick();
     }
   }
-  
-  async function setupLevelThree() {    
+
+  async function setupLevelThree() {
     const axis = svg!.querySelector<SVGCircleElement>("#AXE circle");
     const fragments = svg!.querySelector<SVGElement>("#FRAGMENTS");
-    if (!axis || !fragments) { return; }
-    
+    if (!axis || !fragments) {
+      return;
+    }
+
     await soundsLoaded();
-    const durations = sounds.map(s => s.duration).filter(d => !isNaN(d));
+    const durations = sounds.map((s) => s.duration).filter((d) => !isNaN(d));
     // const averagePlayTime = durations.reduce((total, val) => { return total + val }, 0);
     const medianPlayTime = percentile(durations, 0.5) * sounds.length;
     // const seventyFivePlayTime = percentile(durations, 0.75) * sounds.length;
     // console.log("average", averagePlayTime, "median", medianPlayTime, "75", seventyFivePlayTime);
     circulator = new Circulator(fragments, axis, remotePlayer, medianPlayTime);
   }
-  
+
   async function animateLevelThree() {
     if (!circulator) {
       await setupLevelThree();
     }
     circulator.animate();
   }
-  
+
   export function playpauseLevelThree() {
     if (circulator && circulator.animating) {
       circulator.pause();
@@ -183,11 +200,11 @@
       animateLevelThree();
     }
   }
-  
+
   function isPlaying(): boolean {
-    return sounds.map(s => s.paused).some(p => p === false);
+    return sounds.map((s) => s.paused).some((p) => p === false);
   }
-  
+
   function remotePlayer(fragment: string, command: string = "play") {
     const sound = document.querySelector<HTMLAudioElement>(`#audio_${fragment}`);
     if (!sound) {
@@ -201,11 +218,11 @@
     }
   }
 
-  function toggleAllOnClick() {  
+  function toggleAllOnClick() {
     svg?.addEventListener("click", () => {
-      const maxDuration = Math.max(...sounds.map(s => s.duration));
+      const maxDuration = Math.max(...sounds.map((s) => s.duration));
       root.style.setProperty("--duration", `${maxDuration}s`);
-      
+
       if (isPlaying()) {
         svg?.classList.remove("is-playing");
         sounds.forEach((s) => {
@@ -214,17 +231,17 @@
         });
       } else {
         svg?.classList.add("is-playing");
-        sounds.forEach(s => s.play());
+        sounds.forEach((s) => s.play());
       }
     });
-    
+
     sounds.forEach((s) => {
       s.addEventListener("ended", () => {
         if (!isPlaying()) {
           svg?.classList.remove("is-playing");
         }
       });
-    })
+    });
   }
   function startOnHoverAndClick() {
     elements.forEach((e, i) => {
@@ -236,7 +253,7 @@
       });
     });
   }
-  
+
   function getPathX(path: Element): number {
     const shape = path.getAttribute("d");
     if (!shape) {
@@ -244,7 +261,7 @@
     }
     return parseInt(shape.split(",")[0].replace("M", ""));
   }
-  
+
   function playSoundFor(element: SVGElement, force: Boolean = false) {
     const index = elements.indexOf(element);
     if (index !== -1 && sounds[index]) {
@@ -274,6 +291,4 @@
   .root.is-drawing {
     cursor: url("/marker.svg"), url("/marker.png"), auto;
   }
-
-
 </style>

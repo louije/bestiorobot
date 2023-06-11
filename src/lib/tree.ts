@@ -96,7 +96,7 @@ export class Journey {
     } else {
       throw new InvalidPathError();
     }
-    console.log('new path', this.path);
+    console.log("new path", this.path);
   }
 
   // Check if path is valid

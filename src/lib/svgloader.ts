@@ -5,16 +5,18 @@ type Phrase = {
 };
 type MaybePhrase = Phrase | void;
 
-const files = import.meta.glob('@/phrases/*.svg');
+const files = import.meta.glob("@/phrases/*.svg");
 
 export const phrases: Array<string> = Object.keys(files).map((phrase: string) => {
-  return phrase.split('/').pop()!.replace('.svg', '');
+  return phrase.split("/").pop()!.replace(".svg", "");
 });
 
 let result: any = {};
 export const phrasesPerLevel = phrases.reduce((result, phrase) => {
   const level = extractLevel(phrase)?.toString() || "indéterminé";
-  if (!result[level]) { result[level] = []; }
+  if (!result[level]) {
+    result[level] = [];
+  }
   result[level].push(phrase);
   return result;
 }, result);

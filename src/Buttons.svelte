@@ -1,9 +1,9 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   export let level: number;
-  
+
   const dispatch = createEventDispatcher();
-  
+
   function clearDrawing() {
     dispatch("clearDrawing");
   }
@@ -13,7 +13,7 @@
 </script>
 
 <div class="buttons">
-  {#if level !== 3 }
+  {#if level !== 3}
     <div class="buttons-group buttons-drawing">
       <button on:click={clearDrawing} class="button clear">🧽</button>
     </div>
@@ -25,7 +25,6 @@
 </div>
 
 <style>
-  
   .buttons {
   }
   .buttons-group {
@@ -44,7 +43,7 @@
     background: white;
     border-radius: 50%;
     border: 2.5px solid white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, .25);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
     color: white;
     cursor: pointer;
 
@@ -57,5 +56,4 @@
   }
   .button {
   }
-  
 </style>

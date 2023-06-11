@@ -3,7 +3,10 @@ export function getSVGCoordinates(x: number, y: number, svg: SVGSVGElement) {
   const screenCTM = svg.getScreenCTM();
   const invertedMatrix = screenCTM!.inverse();
   const transformedPoint = point.matrixTransform(invertedMatrix);
-  const truncatedPoint = new DOMPoint(decimals(transformedPoint.x, 2), decimals(transformedPoint.y, 2));
+  const truncatedPoint = new DOMPoint(
+    decimals(transformedPoint.x, 2),
+    decimals(transformedPoint.y, 2)
+  );
   return truncatedPoint;
 }
 
@@ -18,5 +21,5 @@ export function percentile(values: number[], p = 0.5) {
   if (cutOffLow && cutOffHigh) {
     return (cutOffLow + cutOffHigh) / 2;
   }
-  return cutOffLow || cutOffHigh;
+  return cutOffLow || cutOffHigh;
 }

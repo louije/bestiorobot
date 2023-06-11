@@ -26,18 +26,18 @@ export default class Pencil {
     this.createRoot();
     this.addEventListeners();
   }
-  
+
   createRoot() {
     this.root = document.createElementNS("http://www.w3.org/2000/svg", "g");
     this.root.id = "PENCIL";
-    this.svg.appendChild(this.root);    
+    this.svg.appendChild(this.root);
   }
-  
+
   addEventListeners() {
     this.svg.addEventListener("mousemove", this.mousemove.bind(this));
     this.svg.addEventListener("mouseleave", this.stopDrawing.bind(this));
   }
-  
+
   createPath(x: number, y: number) {
     const newPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
     newPath.setAttribute("class", "pencil-mark");
@@ -47,31 +47,33 @@ export default class Pencil {
     newPath.setAttribute("d", `M${x},${y}`);
     return newPath;
   }
-  
-  startDrawing(e: MouseEvent) {    
+
+  startDrawing(e: MouseEvent) {
     const point = getSVGCoordinates(e.clientX, e.clientY, this.svg);
     this.prevX = point.x;
     this.prevY = point.y;
-    
+
     this.path = this.createPath(this.prevX, this.prevY);
     this.root.appendChild(this.path);
   }
-  
+
   stopDrawing() {
     this.prevX = undefined;
     this.prevY = undefined;
     this.path = undefined;
   }
-  
+
   clearDrawing() {
     this.root.replaceChildren();
     if (this.drawing) {
       this.stopDrawing();
     }
   }
-  
+
   mousemove(e: MouseEvent) {
-    if (!this.drawing) { return; }
+    if (!this.drawing) {
+      return;
+    }
     if (!this.path || !this.prevX || !this.prevY) {
       this.startDrawing(e);
     }
