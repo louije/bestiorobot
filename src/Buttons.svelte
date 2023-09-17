@@ -25,8 +25,6 @@
 </div>
 
 <style>
-  .buttons {
-  }
   .buttons-group {
     display: flex;
     justify-content: flex-end;
@@ -53,7 +51,5 @@
   }
   .button + .button {
     margin-left: 1rem;
-  }
-  .button {
   }
 </style>

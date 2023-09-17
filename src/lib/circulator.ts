@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { getSVGCoordinates } from "$lib/util";
 
 export default class Circulator {
@@ -5,18 +6,18 @@ export default class Circulator {
   parent: SVGSVGElement;
   elements: Array<SVGPathElement>;
   elementsMap!: Map<number, SVGPathElement>;
-  currentPathId: string = "";
-  currentAngle: number = 0;
   animation!: Animation;
-  scratching: Boolean = false;
-  wasAnimating: Boolean = false;
+  currentPathId = "";
+  currentAngle = 0;
+  scratching = false;
+  wasAnimating = false;
   lastXY: { x: number; y: number };
   keyframes = { begin: 0, end: -360 };
 
   constructor(
     public group: SVGGraphicsElement,
     public axis: SVGCircleElement,
-    public player: Function,
+    public player: (fragment: string, command?: string) => void,
     public audioLength: number
   ) {
     this.center = this.pathCenter(axis);
@@ -98,7 +99,7 @@ export default class Circulator {
 
   // Automatic animation
 
-  get animating(): Boolean {
+  get animating(): boolean {
     if (this.animation) {
       return this.animation.playState === "running";
     }

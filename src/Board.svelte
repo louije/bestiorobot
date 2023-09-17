@@ -172,7 +172,7 @@
 
   async function setupLevelThree() {
     const axis = svg!.querySelector<SVGCircleElement>("#AXE circle");
-    const fragments = svg!.querySelector<SVGElement>("#FRAGMENTS");
+    const fragments = svg!.querySelector<SVGGraphicsElement>("#FRAGMENTS");
     if (!axis || !fragments) {
       return;
     }

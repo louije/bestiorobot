@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 type Phrase = {
   phrase: string;
   file: () => Promise<any>;
@@ -11,17 +12,16 @@ export const phrases: Array<string> = Object.keys(files).map((phrase: string) =>
   return phrase.split("/").pop()!.replace(".svg", "");
 });
 
-let result: any = {};
-export const phrasesPerLevel = phrases.reduce((result, phrase) => {
-  const level = extractLevel(phrase)?.toString() || "indéterminé";
+export const phrasesPerLevel = phrases.reduce((result: any, phrase) => {
+  const level: string = extractLevel(phrase)?.toString() || "indéterminé";
   if (!result[level]) {
     result[level] = [];
   }
   result[level].push(phrase);
   return result;
-}, result);
+}, {});
 
-function exists(phrase: string): Boolean {
+function exists(phrase: string): boolean {
   return phrases.indexOf(phrase) !== -1;
 }
 
