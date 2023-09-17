@@ -142,8 +142,8 @@
               resolve(audio);
             } else {
               i++;
-              if (i > 9) {
-                reject(`loading ${audio.src} took too long, file probably missing.`);
+              if (i > 20) {
+                reject(`loading ${audio.src} took too long.`);
               } else {
                 setTimeout(checkReadyState, 100);
               }
