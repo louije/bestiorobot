@@ -1,27 +1,27 @@
 <script lang="ts">
   import type { PageData } from "./$types";
-  // import { onMount } from "svelte";
-  // import AudioStarter from "./AudioStarter.svelte";
-
   export let data: PageData;
 
-  const levels = Object.keys(data.phrasesPerLevel);
+  const tree = data.phrasesPerMonsterPerLevel;
+  const monsters = Object.keys(tree);
 </script>
 
 <main>
-  <!-- <AudioStarter> -->
   <div class="root">
-    <h1>Tableaux</h1>
-    {#each levels as level}
-      <h2>Niveau {level}</h2>
-      <ul>
-        {#each data.phrasesPerLevel[level] as phrase}
-          <li><a href="/prosodie/{phrase}">{phrase}</a></li>
-        {/each}
-      </ul>
-    {/each}
+    <h1>
+      Dis Bestiorobot,<br>
+      quand tu te regardes dans le miroir,
+      qu’est-ce que tu vois ?
+    </h1>
+    <p>Choisis l’ADN du Bestiorobot</p>
+    <i class="i-Arrow-Down"></i>
+    <ul>
+      {#each monsters as monster}
+        <li>
+          <a href="/{monster}">{monster}</a>
+        </li>
+      {/each}
   </div>
-  <!-- </AudioStarter> -->
 </main>
 
 <style>
