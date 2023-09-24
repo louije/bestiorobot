@@ -1,20 +1,32 @@
 <script lang="ts">
+  import type { Data } from "@/lib/finder";
   import Board from "@/Board.svelte";
   import Buttons from "@/Buttons.svelte";
+  import MonsterIndicator from "@/MonsterIndicator.svelte";
+  import BottomNavigation from "@/BottomNavigation.svelte";
+  export let data: Data;
 
-  export let phrase: string;
-  export let file: () => Promise<any>;
-  export let level: number | undefined;
+  const phraseData = data.phrase!;
+  const boardName = phraseData.boardName;
+  const file = phraseData.file;
+  const level = phraseData.level;
+  const monster = phraseData.monster;
+
+  const navigation = data.navigation;
 
   let board;
 </script>
 
 <main class="u-FullScreen">
   <div class="BoardContainer u-FullScreen">
-    <Board {phrase} {file} {level} bind:this={board} />
+    <Board {boardName} {file} {level} bind:this={board} />
   </div>
-  <nav class="MonsterPicker">Monster picker</nav>
-  <nav class="Navigation">Bottom navigation</nav>
+  <nav class="MonsterPicker">
+    <MonsterIndicator currentMonster={monster} />
+  </nav>
+  <nav class="Navigation">
+    <BottomNavigation {navigation} />
+  </nav>
   <div class="ButtonsContainer">
     <Buttons
       {level}
@@ -52,6 +64,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+    z-index: 1;
   }
   .ButtonsContainer {
     grid-area: buttons;

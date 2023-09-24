@@ -1,43 +1,49 @@
 <script lang="ts">
   import type { PageData } from "./$types";
+  import Arrow from "../Arrow.svelte";
   export let data: PageData;
-
-  const tree = data.phrasesPerMonsterPerLevel;
-  const monsters = Object.keys(tree);
+  const monsters = data.navigation?.monsters || [];
 </script>
 
 <main>
   <div class="root">
     <h1>
-      Dis Bestiorobot,<br>
-      quand tu te regardes dans le miroir,
-      qu’est-ce que tu vois ?
+      {@html data.texts?.title}
     </h1>
-    <p>Choisis l’ADN du Bestiorobot</p>
-    <i class="i-Arrow-Down"></i>
-    <ul>
-      {#each monsters as monster}
-        <li>
-          <a href="/{monster}">{monster}</a>
-        </li>
-      {/each}
+    <div class="Picker">
+      <p>{data.texts?.sub}</p>
+      <Arrow direction="down" />
+      <ul class="DNAList">
+        {#each monsters as monster, index}
+          <li>
+            <a class="MonsterDNA MonsterDNA--{monster}" href="/{monster}">
+              <img src="/adn-{index + 1}.svg" alt="ADN du monstre {monster}" />
+            </a>
+          </li>
+        {/each}
+      </ul>
+    </div>
   </div>
 </main>
 
 <style>
   main {
-    padding: 3rem;
-    font-family: sans-serif;
-    color: #52b378;
-    max-width: 30rem;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .root {
+    max-height: 100vh;
+    max-width: 33em;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
   }
   h1 {
     font-size: 2rem;
-  }
-  h2 {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-    border-bottom: 1px solid #f37516;
   }
   ul {
     list-style: none;
@@ -48,7 +54,31 @@
     color: inherit;
     text-decoration: none;
   }
-  li {
-    line-height: 1.25rem;
+  .Picker {
+    margin-right: 3rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  .DNAList {
+    display: flex;
+    justify-content: center;
+  }
+  .MonsterDNA {
+    display: block;
+    padding: 0 .5rem .75rem;
+    margin: 0 1rem;
+    border-bottom: 3px solid transparent;
+    &:hover, &:focus {
+      border-bottom: 3px solid black;
+    }
+  }
+  .MonsterDNA img {
+    display: block;
+    height: 5rem;
+    width: 2rem;
+    pointer-events: none;
   }
 </style>

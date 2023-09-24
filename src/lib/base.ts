@@ -1,10 +1,5 @@
-/**
- * @param {string} monster
- * @param {string} phrase
- * @param {string} child
- * @param {string} fragment
- */
-function fragmentPath(monster, phrase, child, fragment) {
+
+function fragmentPath(monster: string, phrase: string, child: string, fragment: string): string {
   const paddedChild = String(child).padStart(3, "0");
   const paddedPhrase = String(phrase).padStart(3, "0");
   const paddedFragment = String(fragment).padStart(3, "0");
@@ -12,10 +7,7 @@ function fragmentPath(monster, phrase, child, fragment) {
   return `/mp3/${name}.mp3`;
 }
 
-/**
- * @param {string} id
- */
-function soundFileFor(id) {
+function soundFileFor(id: string): string {
   return `/mp3/${id}.mp3`;
 }
 

@@ -1,11 +1,11 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { soundFileFor } from "$lib/base";
+  import { soundFileFor } from "$/src/lib/base";
   import { percentile } from "$lib/util";
   import Pencil from "$lib/pencil";
   import Circulator from "$lib/circulator";
 
-  export let phrase: string;
+  export let boardName: string;
   export let file: () => Promise<any>;
   export let level: number | undefined;
 
@@ -53,7 +53,7 @@
     if (!svg) {
       loadingIteration += 1;
       if (loadingIteration > 16) {
-        console.error("Couldn’t load svg file", phrase, file, boardComponent);
+        console.error("Couldn’t load svg file", boardName, file, boardComponent);
         return;
       }
       return requestAnimationFrame(waitForSVG);

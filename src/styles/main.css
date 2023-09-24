@@ -1,6 +1,23 @@
+@font-face {
+  font-family: "NectoMono";
+  src: url(/NectoMono/NectoMono-Regular.otf);
+}
+@font-face {
+  font-family: "Nunito";
+  src: url(/Nunito/static/Nunito-Regular.ttf);
+}
+
+body {
+  font-family: Nunito, sans-serif;
+}
+p {
+  margin: 0;
+}
+
 .u-FullScreen {
   position: relative;
   width: 100vw;
   height: 100vh;
   display: flex;
 }
+

@@ -1,10 +1,8 @@
-import { error } from "@sveltejs/kit";
 import type { PageLoad } from "./$types";
-import { phrases, phrasesPerLevel, phrasesPerMonsterPerLevel } from "@/lib/svgloader";
+import Finder from "../lib/finder";
 
 export const load = (() => {
-  if (phrases.length > 0) {
-    return { phrases, phrasesPerLevel, phrasesPerMonsterPerLevel };
-  }
-  throw error(404, "Not found");
+  const finder = new Finder();
+  const data = finder.go([]);
+  return data;
 }) satisfies PageLoad;

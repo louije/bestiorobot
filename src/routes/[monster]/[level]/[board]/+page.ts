@@ -8,8 +8,10 @@ export const load = (({ params }) => {
   const level = parseInt(params.level) as LevelSlug;
   const board = params.board;
 
+  // console.log("loaded", params);
+
   const data = finder.go([monster, level, board]);
-  console.log(data)
+  // console.log("data", data);
   return data;
 
 }) satisfies PageLoad;

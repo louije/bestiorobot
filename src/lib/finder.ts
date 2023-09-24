@@ -6,26 +6,27 @@ export type BoardSlug = string;
 import { error } from "@sveltejs/kit";
 import texts from "@/text/text.json";
 
+type Tree = Record<MonsterSlug, Record<LevelSlug, string[]>>;
+type Route = [MonsterSlug?, LevelSlug?, BoardSlug?];
+export type Data = {
+  texts?: Record<string, string>;
+  phrase?: Phrase;
+  navigation?: BoardNavigation;
+}
 type Phrase = {
-  phrase: string;
+  boardName: string;
   level: LevelSlug;
   monster: MonsterSlug;
   board: BoardSlug;
   file: () => Promise<unknown>;
 };
-type Tree = Record<MonsterSlug, Record<LevelSlug, string[]>>;
-type Route = [MonsterSlug, LevelSlug?, BoardSlug?];
-type Data = {
-  texts?: Record<string, string>;
-  phrase?: Phrase;
-  navigation?: BoardNavigation;
-}
-type BoardNavigation = {
-  index: number;
-  max: number;
-  previousBoard: string | undefined;
-  nextBoard: string | undefined;
-  nextLevel: string | undefined;
+export type BoardNavigation = {
+  index?: number;
+  max?: number;
+  previous?: string;
+  next?: string;
+  monsters?: Array<MonsterSlug>;
+  redirect?: string;
 }
 
 const monsters: Record<MonsterCode, MonsterSlug> = {
@@ -34,6 +35,13 @@ const monsters: Record<MonsterCode, MonsterSlug> = {
   "GOUR": "gourmand",
   "PHIL": "philanthrope"
 };
+
+export const monsterColors: Record<MonsterSlug, string> = {
+  "aquatique": "#97ff7b",
+  "clanique": "#f47516",
+  "gourmand": "#8352b2",
+  "philanthrope": "#48bfed",
+}
 
 export default class Finder {
   files: Record<string, () => Promise<unknown>>;
@@ -58,11 +66,13 @@ export default class Finder {
     this.current = route;
     let valid = false;
     if (route[2]) {
-      valid = this._checkBoard(route[0], route[1] as LevelSlug, route[2] as BoardSlug);
+      valid = this._checkBoard(route[0] as MonsterSlug, route[1] as LevelSlug, route[2] as BoardSlug);
     } else if (route[1]) {
-      valid = this._checkLevel(route[0], route[1] as LevelSlug);
-    } else {
+      valid = this._checkLevel(route[0] as MonsterSlug, route[1] as LevelSlug);
+    } else if (route[0]) {
       valid = this._checkMonster(route[0]);
+    } else {
+      valid = true;
     }
     if (!valid) {
       throw error(404, "Invalid route");
@@ -149,7 +159,7 @@ export default class Finder {
     const boardIndex = this._extractBoard(board);
     const phrase = this.tree[monster][level][boardIndex];
     return {
-      phrase,
+      boardName: phrase,
       level,
       monster,
       board,
@@ -161,48 +171,62 @@ export default class Finder {
     if (!this.current) {
       return this.texts.intro;
     }
-    const level = this.current[1];
+    const [monster, level] = this.current;
     if (level) {
       return this.texts[`level-${level}`];
+    }
+    if (!monster) {
+      return this.texts.intro;
     }
   }
 
   _getBoardNavigation(): BoardNavigation | undefined {
     const [monster, level, board] = this.current || [];
-    if (!monster || !level || !board) {
-      return;
+    if (!monster) {
+      return {
+        monsters: Object.values(monsters),
+      }
     }
+    if (level && !board)  {
+      return {
+        redirect: `/${monster}/${level}/a`,
+      }
+    }
+    if (!level || !board) { return; }
+
     const index = this._extractBoard(board);
     const boards = this.tree[monster][level];
     const max = boards.length;
 
     const levelURL = `/${monster}/${level}`;
-    let previousBoard;
-    let nextBoard;
-    let nextLevel;
+    let previous;
+    let next;
 
     if (index !== 0) {
       const previousBoardComponent = this._indexToBoard(index - 1);
-      previousBoard = `${levelURL}/${previousBoardComponent}`;
+      previous = `${levelURL}/${previousBoardComponent}`;
+    } else if (level !== 1) {
+      const previousBoard = this.tree[monster][level - 1].length - 1;
+      const previousBoardComponent = this._indexToBoard(previousBoard);
+      previous = `/${monster}/${level - 1}/${previousBoardComponent}`;
+    } else {
+      previous = "/";
     }
 
     if (index !== max - 1) {
       const nextBoardComponent = this._indexToBoard(index + 1);
-      nextBoard = `${levelURL}/${nextBoardComponent}`;
-    }
-
-    if (this.tree[monster][level + 1]) {
-      nextLevel = `/${monster}/${level + 1}`;
+      next = `${levelURL}/${nextBoardComponent}`;
+    } else if (this.tree[monster][level + 1]) {
+      next = `/${monster}/${level + 1}/`;
     } else {
-      nextLevel = `/${monster}/outro`;
+      next = `/${monster}/outro`;
     }
 
     return {
       index,
       max,
-      previousBoard,
-      nextBoard,
-      nextLevel,
+      previous,
+      next,
     };
   }
 }
