@@ -1,8 +1,10 @@
 <script lang="ts">
   import type { PageData } from "./$types";
   import Arrow from "@/Arrow.svelte";
+  import BottomNavigation from "$/src/BottomNavigation.svelte";
   export let data: PageData;
-  const monsters = data.navigation?.monsters || [];
+  const navigation = data.navigation || {};
+  const monsters = navigation?.monsters || [];
 </script>
 
 <main>
@@ -11,7 +13,6 @@
       {@html data.texts?.title}
     </h1>
     <div class="Picker">
-      <p>{data.texts?.sub}</p>
       <Arrow direction="down" />
       <ul class="DNAList">
         {#each monsters as monster, index}
@@ -23,6 +24,7 @@
         {/each}
       </ul>
     </div>
+    <BottomNavigation {navigation} />
   </div>
 </main>
 

@@ -9,15 +9,19 @@
 </script>
 
 <nav>
-  <a class="NavArrow" href={previous} data-sveltekit-reload>
-    <Arrow direction="left" />
-  </a>
+  {#if previous}
+    <a class="NavArrow" href={previous} data-sveltekit-reload>
+      <Arrow direction="left" />
+    </a>
+  {/if}
   {#each bullets as _, index}
     <i class="Bullet" class:Bullet--current={index === current}></i>
   {/each}
-  <a class="NavArrow" href={next} data-sveltekit-reload>
-    <Arrow direction="right" />
-  </a>
+  {#if next}
+    <a class="NavArrow" href={next} data-sveltekit-reload>
+      <Arrow direction="right" />
+    </a>
+  {/if}
 </nav>
 
 <style>

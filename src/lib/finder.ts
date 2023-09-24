@@ -49,6 +49,7 @@ export default class Finder {
   tree: Tree;
   current: Route | undefined;
   texts: Record<string, Record<string, string>>;
+  isOutro: boolean = false;
 
   constructor() {
     this.files = import.meta.glob("@/phrases/*.svg");
@@ -57,12 +58,14 @@ export default class Finder {
     this.tree = this._buildTree();
   }
 
-  go(route: Route) {
-    this.setCurrent(route);
+  go(route: Route, opts = { outro: false }) {
+    const { outro } = opts;
+    this.setCurrent(route, { outro });
+
     return this.getCurrent();
   }
 
-  setCurrent(route: Route) {
+  setCurrent(route: Route, { outro }: { outro: boolean }): void {
     this.current = route;
     let valid = false;
     if (route[2]) {
@@ -71,6 +74,7 @@ export default class Finder {
       valid = this._checkLevel(route[0] as MonsterSlug, route[1] as LevelSlug);
     } else if (route[0]) {
       valid = this._checkMonster(route[0]);
+      this.isOutro = outro;
     } else {
       valid = true;
     }
@@ -171,6 +175,9 @@ export default class Finder {
     if (!this.current) {
       return this.texts.intro;
     }
+    if (this.isOutro) {
+      return this.texts.outro;
+    }
     const [monster, level] = this.current;
     if (level) {
       return this.texts[`level-${level}`];
@@ -185,6 +192,13 @@ export default class Finder {
     if (!monster) {
       return {
         monsters: Object.values(monsters),
+      }
+    }
+    if (this.isOutro) {
+      const lastLevelForMonster = Object.keys(this.tree[monster]).length;
+      return {
+        monsters: Object.values(monsters),
+        previous: `/${monster}/${lastLevelForMonster}`,
       }
     }
     if (level && !board)  {

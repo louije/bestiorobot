@@ -1,5 +1,5 @@
 import type { PageLoad } from "./$types";
-import Finder from "../lib/finder";
+import Finder from "@/lib/finder";
 
 export const load = (() => {
   const finder = new Finder();
