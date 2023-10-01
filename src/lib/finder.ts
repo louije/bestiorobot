@@ -202,8 +202,16 @@ export default class Finder {
       }
     }
     if (level && !board)  {
+      const firstBoard = `/${monster}/${level}/a`;
+      if (level === 1) {
+        return {
+          redirect: firstBoard,
+        }
+      }
+      const previousBoard = this._indexToBoard(this.tree[monster][level - 1].length - 1);
       return {
-        redirect: `/${monster}/${level}/a`,
+        next: firstBoard,
+        previous: `/${monster}/${level - 1}/${previousBoard}`,
       }
     }
     if (!level || !board) { return; }
@@ -220,9 +228,7 @@ export default class Finder {
       const previousBoardComponent = this._indexToBoard(index - 1);
       previous = `${levelURL}/${previousBoardComponent}`;
     } else if (level !== 1) {
-      const previousBoard = this.tree[monster][level - 1].length - 1;
-      const previousBoardComponent = this._indexToBoard(previousBoard);
-      previous = `/${monster}/${level - 1}/${previousBoardComponent}`;
+      previous = `/${monster}/${level}/`;
     } else {
       previous = "/";
     }

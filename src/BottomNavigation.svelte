@@ -14,9 +14,11 @@
       <Arrow direction="left" />
     </a>
   {/if}
-  {#each bullets as _, index}
-    <i class="Bullet" class:Bullet--current={index === current}></i>
-  {/each}
+  <div class="Bullets">
+    {#each bullets as _, index}
+      <i class="Bullet" class:Bullet--current={index === current}></i>
+    {/each}
+  </div>
   {#if next}
     <a class="NavArrow" href={next} data-sveltekit-reload>
       <Arrow direction="right" />
@@ -26,13 +28,18 @@
 
 <style>
 nav {
-  display: flex;
+  display: grid;
   justify-content: center;
   gap: .5rem;
   align-items: center;
+  grid-template-columns: repeat(3, 1fr);
 }
 .NavArrow {
   margin: 0 1rem;
+}
+.Bullets {
+  display: flex;
+  justify-content: space-around;
 }
 .Bullet {
   height: .5rem;

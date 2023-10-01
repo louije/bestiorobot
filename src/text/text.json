@@ -1,29 +1,29 @@
 {
   "intro": {
     "title": "Dis Bestiorobot, <br>quand tu te regardes dans le miroir, qu’est-ce que tu vois ?",
-    "sub": "Choisis l’ADN du Bestiorobot"
+    "sub": "Choisis l’ADN du Bestiorobot"
   },
   "level-1": {
     "help": "La parole, c’est du son et du silence.<br>Quand on parle, on fait de petites pauses, parfois très courtes. La parole, c’est du son en pointillés !"
   },
   "level-2": {
     "title": "Dis Bestiorobot, <br>est-ce que tu sens bon ?",
-    "sub": "À toi de décrypter la réponse du Bestiorobot",
+    "sub": "À toi de décrypter la réponse du Bestiorobot",
     "help": "La parole peut s’écrire autrement qu’avec l’alphabet. Ici, chaque phrase est dessinée par son sonagramme : on voit le son des mots dans le temps. Par exemple, quand la voix devient plus aiguë, le trait remonte."
   },
   "level-3": {
-    "title": "Dis Bestiorobot, <br>est-ce que tu t’entends bien avec tes voisins ?",
-    "sub": "À toi de décrypter la réponse du Bestiorobot",
+    "title": "Dis Bestiorobot, <br>est-ce que tu t’entends bien avec tes voisins ?",
+    "sub": "À toi de décrypter la réponse du Bestiorobot",
     "help": "Chacune et chacun prononce une même phrase à sa façon. Bout-à-bout, ça forme une grande phrase qui se répète, comme une mélodie."
   },
   "level-4": {
     "title": "Dis Bestiorobot, <br>qu’est-ce que tu manges ?",
-    "sub": "À toi de décrypter la réponse du Bestiorobot",
+    "sub": "À toi de décrypter la réponse du Bestiorobot",
     "help": "En mélangeant les bouts de phrases de tout le monde, tu peux fabriquer une nouvelle mélodie et une nouvelle phrase."
   },
   "level-5": {
     "title": "Dis Bestiorobot, <br>quelle est ton arme secrète ?",
-    "sub": "À toi de décrypter la réponse du Bestiorobot",
+    "sub": "À toi de décrypter la réponse du Bestiorobot",
     "help": "Et si on mélange des bouts de phrases encore plus petits, on commence à entendre une nouvelle voix, la voix de tout le monde !"
   },
   "outro": {

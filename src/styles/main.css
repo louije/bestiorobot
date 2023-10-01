@@ -8,11 +8,27 @@
 }
 
 body {
-  font-family: Nunito, sans-serif;
+  font-family: NectoMono, sans-serif;
 }
 p {
   margin: 0;
 }
+h1 {
+  font-size: 2.5rem;
+  font-family: Nunito, sans-serif;
+}
+
+
+.u-RootScreen {
+  max-height: 100vh;
+  max-width: 40em;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5rem 0 2.5rem;
+  align-items: center;
+}
+
 
 .u-FullScreen {
   position: relative;
