@@ -4,6 +4,7 @@
   import Buttons from "@/Buttons.svelte";
   import BottomNavigation from "@/BottomNavigation.svelte";
   import TopNavigation from "@/TopNavigation.svelte";
+  import Info from "@/Info.svelte";
   export let data: Data;
 
   const phraseData = data.phrase!;
@@ -14,8 +15,17 @@
   const board = phraseData.board;
 
   const navigation = data.navigation;
+  const helpText = data.texts?.help;
 
+  let infoVisible = false;;
   let boardComponent;
+
+  function showInfo() {
+    infoVisible = true;
+  }
+  function closeInfo() {
+    infoVisible = false;;
+  }
 </script>
 
 <main class="u-FullScreen">
@@ -30,11 +40,17 @@
       <BottomNavigation {navigation} />
     {/if}
   </nav>
+  {#if helpText}
+    <div class="Info" class:Info--visible={infoVisible}>
+      <Info text={helpText} on:closeInfo={closeInfo} />
+    </div>
+  {/if}
   <div class="ButtonsContainer">
     <Buttons
       {level}
       on:clearDrawing={boardComponent.clearDrawing}
       on:playpauseLevelThree={boardComponent.playpauseLevelThree}
+      on:showInfo={showInfo}
     />
   </div>
 </main>
@@ -70,5 +86,11 @@
   }
   .ButtonsContainer {
     grid-area: buttons;
+  }
+  .Info {
+    display: none;
+  }
+  .Info--visible {
+    display: block;
   }
 </style>

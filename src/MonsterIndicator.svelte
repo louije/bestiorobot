@@ -1,7 +1,7 @@
 <script lang="ts">
   export let currentMonster: string;
   export let currentLevel: number;
-  export let currentBoard: string;
+  export let currentBoard: string | undefined;
   import { monsterColors } from "@/lib/finder";
 
   let levelAndBoard = "";

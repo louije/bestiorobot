@@ -3,7 +3,7 @@
   import BackButton from "@/BackButton.svelte";
   export let monster: string;
   export let level: number;
-  export let board: string | undefined;
+  export let board: string | undefined = undefined;
 </script>
 
 <div>

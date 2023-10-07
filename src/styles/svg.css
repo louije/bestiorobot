@@ -8,7 +8,6 @@
   stroke-linecap: round;
 }
 #FRAGMENTS path {
-  cursor: pointer;
   opacity: 0.8;
 }
 #FRAGMENTS path:hover {

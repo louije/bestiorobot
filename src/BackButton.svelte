@@ -20,7 +20,7 @@
   }
   .MonsterDNA img {
     display: block;
-    height: 3rem;
+    height: 3.5rem;
     pointer-events: none;
     padding-bottom: .5rem;
   }

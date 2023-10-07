@@ -291,6 +291,6 @@
     padding: 4rem;
   }
   .root.is-drawing {
-    cursor: url("/marker.svg"), url("/marker.png"), auto;
+    cursor: url("/pencil.svg") 1 31, url("/pencil.png") 1 31, auto;
   }
 </style>
