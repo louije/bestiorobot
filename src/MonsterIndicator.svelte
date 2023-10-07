@@ -1,9 +1,15 @@
 <script lang="ts">
   export let currentMonster: string;
   export let currentLevel: number;
+  export let currentBoard: string;
   import { monsterColors } from "@/lib/finder";
 
-  const levelAndBoard = (currentLevel) ? `${currentLevel}/a` : "";
+  let levelAndBoard = "";
+  if (currentLevel && currentBoard) {
+    levelAndBoard = `${currentLevel}/a`;
+  } else if (currentLevel) {
+    levelAndBoard = `${currentLevel}`;
+  }
 </script>
 
 <div class="MonsterIndicator">

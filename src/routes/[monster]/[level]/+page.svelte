@@ -1,11 +1,20 @@
 <script lang="ts">
   import type { PageData } from "./$types";
   import BottomNavigation from "@/BottomNavigation.svelte";
+  import TopNavigation from "@/TopNavigation.svelte";
   export let data: PageData;
+
+  const monster = data.phrase!.monster;
+  const level = data.phrase!.level;
   const navigation = data.navigation || {};
 </script>
 
 <main>
+  <div class="u-FullScreen">
+    <nav class="TopNavigation">
+      <TopNavigation {monster} {level} />
+    </nav>
+  </div>
   <div class="u-RootScreen u-FullScreen">
     <div class="Question">
       <h1>
@@ -24,6 +33,10 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+  }
+  .TopNavigation {
+    position: absolute;
+    width: 100%;
   }
   .Question {
     margin: auto 0;

@@ -2,29 +2,28 @@
   import type { Data } from "@/lib/finder";
   import Board from "@/Board.svelte";
   import Buttons from "@/Buttons.svelte";
-  import MonsterIndicator from "@/MonsterIndicator.svelte";
   import BottomNavigation from "@/BottomNavigation.svelte";
-  import BackButton from "@/BackButton.svelte";
+  import TopNavigation from "@/TopNavigation.svelte";
   export let data: Data;
 
   const phraseData = data.phrase!;
-  const boardName = phraseData.boardName;
-  const file = phraseData.file;
-  const level = phraseData.level;
+  const boardName = phraseData.boardName!;
+  const file = phraseData.file!;
   const monster = phraseData.monster;
+  const level = phraseData.level;
+  const board = phraseData.board;
 
   const navigation = data.navigation;
 
-  let board;
+  let boardComponent;
 </script>
 
 <main class="u-FullScreen">
   <div class="BoardContainer u-FullScreen">
-    <Board {boardName} {file} {level} bind:this={board} />
+    <Board {boardName} {file} {level} bind:this={boardComponent} />
   </div>
   <nav class="TopNavigation">
-    <BackButton />
-    <MonsterIndicator currentMonster={monster} currentLevel={level} />
+    <TopNavigation {monster} {level} {board} />
   </nav>
   <nav class="Navigation">
     {#if navigation}
@@ -34,8 +33,8 @@
   <div class="ButtonsContainer">
     <Buttons
       {level}
-      on:clearDrawing={board.clearDrawing}
-      on:playpauseLevelThree={board.playpauseLevelThree}
+      on:clearDrawing={boardComponent.clearDrawing}
+      on:playpauseLevelThree={boardComponent.playpauseLevelThree}
     />
   </div>
 </main>
@@ -56,10 +55,6 @@
   }
   .TopNavigation {
     grid-area: topnav;
-    padding: 3rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
   }
   .Navigation,
   .ButtonsContainer {

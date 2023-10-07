@@ -14,11 +14,11 @@ export type Data = {
   navigation?: BoardNavigation;
 }
 type Phrase = {
-  boardName: string;
+  boardName?: string;
   level: LevelSlug;
   monster: MonsterSlug;
-  board: BoardSlug;
-  file: () => Promise<unknown>;
+  board?: BoardSlug;
+  file?: () => Promise<unknown>;
 };
 export type BoardNavigation = {
   index?: number;
@@ -49,7 +49,7 @@ export default class Finder {
   tree: Tree;
   current: Route | undefined;
   texts: Record<string, Record<string, string>>;
-  isOutro: boolean = false;
+  isOutro = false;
 
   constructor() {
     this.files = import.meta.glob("@/phrases/*.svg");
@@ -158,16 +158,15 @@ export default class Finder {
 
   _phraseForCurrent(): Phrase | undefined {
     const [monster, level, board] = this.current || [];
-    if (!monster || !level || !board) { return; }
+    if (!monster || !level) { return; }
     
-    const boardIndex = this._extractBoard(board);
-    const phrase = this.tree[monster][level][boardIndex];
+    const phrase = (board) ? this.tree[monster][level][this._extractBoard(board)] : undefined;
     return {
       boardName: phrase,
       level,
       monster,
       board,
-      file: this.files[`/src/phrases/${phrase}.svg`],
+      file: (phrase) ? this.files[`/src/phrases/${phrase}.svg`] : undefined,
     };
   }
 
