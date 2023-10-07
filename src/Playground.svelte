@@ -4,6 +4,7 @@
   import Buttons from "@/Buttons.svelte";
   import MonsterIndicator from "@/MonsterIndicator.svelte";
   import BottomNavigation from "@/BottomNavigation.svelte";
+  import BackButton from "@/BackButton.svelte";
   export let data: Data;
 
   const phraseData = data.phrase!;
@@ -21,11 +22,14 @@
   <div class="BoardContainer u-FullScreen">
     <Board {boardName} {file} {level} bind:this={board} />
   </div>
-  <nav class="MonsterPicker">
-    <MonsterIndicator currentMonster={monster} />
+  <nav class="TopNavigation">
+    <BackButton />
+    <MonsterIndicator currentMonster={monster} currentLevel={level} />
   </nav>
   <nav class="Navigation">
-    <BottomNavigation {navigation} />
+    {#if navigation}
+      <BottomNavigation {navigation} />
+    {/if}
   </nav>
   <div class="ButtonsContainer">
     <Buttons
@@ -40,9 +44,9 @@
   main {
     display: grid;
     grid-template-areas:
-      "picker .     ."
-      "work   work  work"
-      ".      nav   buttons";
+      "topnav topnav topnav"
+      "work   work   work"
+      ".      nav    buttons";
     grid-template-rows: auto 1fr auto;
     grid-template-columns: 1fr 1fr 1fr;
   }
@@ -50,10 +54,12 @@
     grid-row: 1/-1;
     grid-column: 1/-1;
   }
-  .MonsterPicker {
-    grid-area: picker;
-    padding: 1rem;
+  .TopNavigation {
+    grid-area: topnav;
     padding: 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
   .Navigation,
   .ButtonsContainer {

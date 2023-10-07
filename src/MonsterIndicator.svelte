@@ -1,12 +1,15 @@
 <script lang="ts">
   export let currentMonster: string;
+  export let currentLevel: number;
   import { monsterColors } from "@/lib/finder";
+
+  const levelAndBoard = (currentLevel) ? `${currentLevel}/a` : "";
 </script>
 
 <div class="MonsterIndicator">
   {#each Object.entries(monsterColors) as [monster, color]}
     <a
-      href={`/${monster}`}
+      href={`/${monster}/${levelAndBoard}`}
       data-sveltekit-reload
       class="MonsterIndicator__item" style="background-color: {color}" class:MonsterIndicator--current={monster === currentMonster ? true : false}
     >
@@ -42,10 +45,11 @@
     display: block;
     position: absolute;
     white-space: nowrap;
-    left: 100%;
+    text-align: right;
+    right: 100%;
     top: 50%;
     transform: translateY(-50%);
-    padding: 0 0 0 1rem;
+    padding: 0 1rem 0 0;
     color: black;
   }
 }
