@@ -19,6 +19,8 @@
 
   let infoVisible = false;;
   let boardComponent;
+  let dirty = false;
+  let pencilIsOn: boolean;
 
   function showInfo() {
     infoVisible = true;
@@ -26,11 +28,22 @@
   function closeInfo() {
     infoVisible = false;;
   }
+  function dirtyStateChange(e) {
+    dirty = e.detail;
+  }
+  function pencilStateChange(e) {
+    pencilIsOn = e.detail;
+  }
 </script>
 
 <main class="u-FullScreen">
   <div class="BoardContainer u-FullScreen">
-    <Board {boardName} {file} {level} bind:this={boardComponent} />
+    <Board
+      {boardName} {file} {level}
+      bind:this={boardComponent}
+      on:dirtyStateChange={dirtyStateChange}
+      on:pencilStateChange={pencilStateChange}
+    />
   </div>
   <nav class="TopNavigation">
     <TopNavigation {monster} {level} {board} />
@@ -48,9 +61,12 @@
   <div class="ButtonsContainer">
     <Buttons
       {level}
+      {dirty}
+      {pencilIsOn}
       on:clearDrawing={boardComponent.clearDrawing}
       on:playpause={boardComponent.playpause}
       on:showInfo={showInfo}
+      on:togglePencil={boardComponent.togglePencil}
     />
   </div>
 </main>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, createEventDispatcher } from "svelte";
   import { soundFileFor } from "@/lib/base";
   import { percentile } from "@/lib/util";
   import Pencil from "@/lib/pencil";
@@ -10,6 +10,7 @@
   export let file: () => Promise<any>;
   export let level: number;
 
+  let dispatch = createEventDispatcher();
   let loadingIteration = 0;
 
   let root: HTMLElement;
@@ -19,11 +20,18 @@
   let sounds: Array<HTMLAudioElement>;
 
   let times: Record<string, number> = cachedTimes;
-  let isDrawing: boolean = false;
+  let isDrawing = false;
+  let pencilIsOn = true;
+  let isDirty = false;
   let pencil: Pencil;
   $: {
     if (pencil) {
       pencil.drawing = isDrawing;
+    }
+  }
+  $: {
+    if (pencil) {
+      pencil.isOn = pencilIsOn;
     }
   }
 
@@ -70,16 +78,28 @@
     setupInteractions();
     
     if (level !== 1) {
-      pencil = new Pencil(svg, setDrawing);
+      pencil = new Pencil(svg, pencilStateSetter);
     }
   }
 
-  function setDrawing(newValue: boolean) {
-    isDrawing = newValue;
+  function pencilStateSetter(drawing: boolean, on: boolean, dirty: boolean) {
+    isDrawing = drawing;
+    if (on !== pencilIsOn) {
+      pencilIsOn = on;
+      dispatch("pencilStateChange", on);
+    }
+    if (dirty !== isDirty) {
+      isDirty = dirty;
+      dispatch("dirtyStateChange", dirty);
+    }
   }
 
   export function clearDrawing() {
     pencil.clearDrawing();
+  }
+
+  export function togglePencil() {
+    pencil.toggle();
   }
 
   function cleanupSVG() {
@@ -294,6 +314,6 @@
     padding: 4rem;
   }
   .root.is-drawing {
-    cursor: url("/pencil.svg") 1 31, url("/pencil.png") 1 31, auto;
+    cursor: url("/marker.svg"), url("/marker.png"), auto;
   }
 </style>

@@ -1,6 +1,8 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   export let level: number;
+  export let dirty: boolean;
+  export let pencilIsOn: boolean
 
   const dispatch = createEventDispatcher();
 
@@ -13,14 +15,23 @@
   function showInfo() {
     dispatch("showInfo");
   }
+  function togglePencil() {
+    dispatch("togglePencil");
+  }
 </script>
 
 <div class="buttons-group">
-  {#if level !== 1 && level !== 3}
+  {#if dirty}
     <button on:click={clearDrawing} class="button clear">
       <img src="/reset.svg" alt="Effacer les gribouillis" />
     </button>
-  {:else}
+  {/if}
+  {#if level === 3}
+    <button on:click={togglePencil} class="button pencil" class:button--active={pencilIsOn}>
+      <img src="/pencil.svg" alt="Dessiner" />
+    </button>
+  {/if}
+  {#if level === 1 || level === 3}
     <button on:click={playpause} class="button play">
       <img src="/playpause.svg" alt="Jouer / mettre en pause" />
     </button>
@@ -50,11 +61,24 @@
     box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.25);
     color: white;
     cursor: pointer;
-
-    transition: box-shadow .25s ease;
   }
-  button:hover {
-    box-shadow: 4px 8px 10px rgba(0, 0, 0, 0.33);
+  .button:hover {
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.33);
+  }
+  .button:active {
+    top: 2px;
+    left: 2px;
+    box-shadow: 2px 4px 2.5px rgba(0, 0, 0, 0.25);
+  }
+  .button--active {
+    border: 2px solid white;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.25), 0 0 0 2px orange;
+  }
+  .button--active:hover {
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.33), 0 0 0 2px orange;
+  }
+  .button--active:active {
+    box-shadow: 2px 4px 2.5px rgba(0, 0, 0, 0.25), 0 0 0 2px orange;
   }
   .button + .button {
     margin-left: 1rem;

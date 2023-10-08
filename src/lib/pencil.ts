@@ -1,5 +1,5 @@
-import { getSVGCoordinates } from "$lib/util";
-type StateSetterFn = (newValue: boolean) => void;
+import { getSVGCoordinates } from "@/lib/util";
+type StateSetterFn = (drawing: boolean, on: boolean, dirty: boolean) => void;
 
 export default class Pencil {
   svg: SVGSVGElement;
@@ -9,13 +9,15 @@ export default class Pencil {
   path?: SVGElement;
   prevX?: number;
   prevY?: number;
+  isOn = true;
+  dirty = false;
 
   get drawing(): boolean {
     return this._drawing;
   }
   set drawing(newValue: boolean) {
     this._drawing = newValue;
-    this.stateSetter(this.drawing);
+    this.updateState();
     if (!this._drawing) {
       this.stopDrawing();
     }
@@ -35,10 +37,14 @@ export default class Pencil {
   }
 
   addEventListeners() {
-    document.addEventListener("mousedown", () => { this.drawing = true; });
-    document.addEventListener("mouseup", () => { this.drawing = false; });
+    document.addEventListener("mousedown", this.mousedown.bind(this));
+    document.addEventListener("mouseup", this.mouseup.bind(this));
     this.svg.addEventListener("mousemove", this.mousemove.bind(this));
     this.svg.addEventListener("mouseleave", this.stopDrawing.bind(this));
+  }
+
+  updateState() {
+    this.stateSetter(this.drawing, this.isOn, this.dirty);
   }
 
   createPath(x: number, y: number) {
@@ -58,6 +64,8 @@ export default class Pencil {
 
     this.path = this.createPath(this.prevX, this.prevY);
     this.root.appendChild(this.path);
+    this.dirty = true;
+    this.updateState
   }
 
   stopDrawing() {
@@ -66,15 +74,31 @@ export default class Pencil {
     this.path = undefined;
   }
 
+  toggle() {
+    this.isOn = !this.isOn;
+    this.updateState();
+  }
+
   clearDrawing() {
+    this.dirty = false;
+    this.updateState();
     this.root.replaceChildren();
     if (this.drawing) {
       this.stopDrawing();
     }
   }
 
+  mousedown() {
+    if (!this.isOn) { return; }
+    this.drawing = true;
+  }
+
+  mouseup() {
+    this.drawing = false;
+  }
+
   mousemove(e: MouseEvent) {
-    if (!this.drawing) {
+    if (!this.drawing || !this.isOn) {
       return;
     }
     if (!this.path || !this.prevX || !this.prevY) {
