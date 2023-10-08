@@ -22,7 +22,9 @@
       </h1>
       <p>{@html data.texts?.sub}</p>
     </div>
-    <BottomNavigation {navigation} />
+    <div class="BottomNavigation">
+      <BottomNavigation {navigation} />
+    </div>
   </div>
 </main>
 
@@ -37,6 +39,9 @@
   .TopNavigation {
     position: absolute;
     width: 100%;
+  }
+  .BottomNavigation {
+    padding-bottom: .75rem;
   }
   .Question {
     margin: auto 0;
