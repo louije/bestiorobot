@@ -77,7 +77,9 @@
     loadSounds();
     setupInteractions();
     
-    if (level !== 1) {
+    if (level === 3) {
+      pencil = new Pencil(svg, pencilStateSetter, false);
+    } else if (level !== 1) {
       pencil = new Pencil(svg, pencilStateSetter);
     }
   }

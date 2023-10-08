@@ -23,9 +23,10 @@ export default class Pencil {
     }
   }
 
-  constructor(svg: SVGSVGElement, stateSetter: StateSetterFn) {
+  constructor(svg: SVGSVGElement, stateSetter: StateSetterFn, on = true) {
     this.svg = svg;
     this.stateSetter = stateSetter;
+    this.isOn = on;
     this.createRoot();
     this.addEventListeners();
   }
