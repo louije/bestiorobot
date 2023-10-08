@@ -4,7 +4,7 @@ export type LevelSlug = number;
 export type BoardSlug = string;
 
 import { error } from "@sveltejs/kit";
-import texts from "@/text/text.json";
+import texts from "@/data/texts.json";
 
 type Tree = Record<MonsterSlug, Record<LevelSlug, string[]>>;
 type Route = [MonsterSlug?, LevelSlug?, BoardSlug?];

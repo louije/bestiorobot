@@ -1,9 +1,10 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { soundFileFor } from "$/src/lib/base";
-  import { percentile } from "$lib/util";
-  import Pencil from "$lib/pencil";
-  import Circulator from "$lib/circulator";
+  import { soundFileFor } from "@/lib/base";
+  import { percentile } from "@/lib/util";
+  import Pencil from "@/lib/pencil";
+  import Circulator from "@/lib/circulator";
+  import cachedTimes from "@/data/times.json";
 
   export let boardName: string;
   export let file: () => Promise<any>;
@@ -17,6 +18,7 @@
   let elements: Array<SVGElement>;
   let sounds: Array<HTMLAudioElement>;
 
+  let times: Record<string, number> = cachedTimes;
   let isDrawing: boolean = false;
   let pencil: Pencil;
   $: {
@@ -153,7 +155,7 @@
         })
     );
 
-    return Promise.all(canPlayThroughPromises)
+    return Promise.allSettled(canPlayThroughPromises)
       .then((loadedAudioElements) =>
         console.log(`All ${loadedAudioElements.length} audio elements can play through`)
       )
@@ -171,6 +173,7 @@
   }
 
   async function setupLevelThree() {
+    let playTime: number;
     const axis = svg!.querySelector<SVGCircleElement>("#AXE circle");
     const fragments = svg!.querySelector<SVGGraphicsElement>("#FRAGMENTS");
     if (!axis || !fragments) {
@@ -179,11 +182,15 @@
 
     await soundsLoaded();
     const durations = sounds.map((s) => s.duration).filter((d) => !isNaN(d));
-    // const averagePlayTime = durations.reduce((total, val) => { return total + val }, 0);
-    const medianPlayTime = percentile(durations, 0.5) * sounds.length;
-    // const seventyFivePlayTime = percentile(durations, 0.75) * sounds.length;
-    // console.log("average", averagePlayTime, "median", medianPlayTime, "75", seventyFivePlayTime);
-    circulator = new Circulator(fragments, axis, remotePlayer, medianPlayTime);
+    
+    if (durations.length) {
+      playTime = percentile(durations, 0.5) * sounds.length; // median
+      // playTime = durations.reduce((total, val) => { return total + val }, 0); // average
+      // playTime = percentile(durations, 0.75) * sounds.length; // 75% of frags
+    } else {
+      playTime = times[boardName] || (level === 1) ? 8 : 50;
+    }
+    circulator = new Circulator(fragments, axis, remotePlayer, playTime);
   }
 
   async function animateLevelThree() {
