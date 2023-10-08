@@ -28,10 +28,10 @@
   function closeInfo() {
     infoVisible = false;;
   }
-  function dirtyStateChange(e) {
+  function dirtyStateChange(e: CustomEvent<boolean>) {
     dirty = e.detail;
   }
-  function pencilStateChange(e) {
+  function pencilStateChange(e: CustomEvent<boolean>) {
     pencilIsOn = e.detail;
   }
 </script>
