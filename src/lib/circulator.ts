@@ -46,7 +46,7 @@ export default class Circulator {
     rotationTarget.setAttribute("fill", "transparent");
     parent.prepend(rotationTarget);
 
-    rotationTarget.addEventListener("mousedown", this.startScratching.bind(this));
+    document.addEventListener("mousedown", this.startScratching.bind(this));
     document.addEventListener("mousemove", this.scratch.bind(this));
     document.addEventListener("mouseup", this.stopScratching.bind(this));
   }
