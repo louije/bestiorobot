@@ -49,7 +49,7 @@
     <Buttons
       {level}
       on:clearDrawing={boardComponent.clearDrawing}
-      on:playpauseLevelThree={boardComponent.playpauseLevelThree}
+      on:playpause={boardComponent.playpause}
       on:showInfo={showInfo}
     />
   </div>

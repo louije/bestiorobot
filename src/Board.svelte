@@ -7,7 +7,7 @@
 
   export let boardName: string;
   export let file: () => Promise<any>;
-  export let level: number | undefined;
+  export let level: number;
 
   let loadingIteration = 0;
 
@@ -37,7 +37,6 @@
   onMount(async () => {
     const module = await file();
     boardComponent = module.default;
-    // console.log("mounting", phrase);
     requestAnimationFrame(waitForSVG);
   });
 
@@ -58,7 +57,6 @@
       }
       return requestAnimationFrame(waitForSVG);
     }
-    // console.log("mounted", phrase, svg);
     setup();
   }
 
@@ -68,8 +66,10 @@
     getElements();
     loadSounds();
     setupInteractions();
-
-    pencil = new Pencil(svg, setDrawing);
+    
+    if (level !== 1) {
+      pencil = new Pencil(svg, setDrawing);
+    }
   }
 
   function setDrawing(newValue: boolean) {
@@ -193,7 +193,32 @@
     circulator.animate();
   }
 
-  export function playpauseLevelThree() {
+  export function playpause() {
+    switch(level) {
+      case 1:
+        playpauseAllSounds();
+        break;
+      case 3:
+        playpauseCirculator();
+        break;
+      default:
+    }
+  }
+  function playpauseAllSounds() {
+    const maxDuration = Math.max(...sounds.map((s) => s.duration));
+    root.style.setProperty("--duration", `${maxDuration}s`);
+    if (isPlaying()) {
+      svg?.classList.remove("is-playing");
+      sounds.forEach((s) => {
+        s.pause();
+        s.currentTime = 0;
+      });
+    } else {
+      svg?.classList.add("is-playing");
+      sounds.forEach((s) => s.play());
+    }
+  }
+  function playpauseCirculator() {
     if (circulator && circulator.animating) {
       circulator.pause();
     } else {
@@ -220,19 +245,7 @@
 
   function toggleAllOnClick() {
     svg?.addEventListener("click", () => {
-      const maxDuration = Math.max(...sounds.map((s) => s.duration));
-      root.style.setProperty("--duration", `${maxDuration}s`);
-
-      if (isPlaying()) {
-        svg?.classList.remove("is-playing");
-        sounds.forEach((s) => {
-          s.pause();
-          s.currentTime = 0;
-        });
-      } else {
-        svg?.classList.add("is-playing");
-        sounds.forEach((s) => s.play());
-      }
+      playpauseAllSounds();
     });
 
     sounds.forEach((s) => {
@@ -254,23 +267,6 @@
         }
       });
     });
-  }
-
-  function getPathX(path: Element): number {
-    const shape = path.getAttribute("d");
-    if (!shape) {
-      return 0;
-    }
-    return parseInt(shape.split(",")[0].replace("M", ""));
-  }
-
-  function playSoundFor(element: SVGElement, force: Boolean = false) {
-    const index = elements.indexOf(element);
-    if (index !== -1 && sounds[index]) {
-      if (force || sounds[index].paused === true) {
-        sounds[index].play();
-      }
-    }
   }
 </script>
 

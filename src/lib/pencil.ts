@@ -1,18 +1,19 @@
 import { getSVGCoordinates } from "$lib/util";
+type StateSetterFn = (newValue: boolean) => void;
 
 export default class Pencil {
   svg: SVGSVGElement;
-  _drawing: Boolean = false;
-  stateSetter: Function;
+  _drawing = false;
+  stateSetter: StateSetterFn;
   root!: SVGGElement;
   path?: SVGElement;
   prevX?: number;
   prevY?: number;
 
-  get drawing(): Boolean {
+  get drawing(): boolean {
     return this._drawing;
   }
-  set drawing(newValue: Boolean) {
+  set drawing(newValue: boolean) {
     this._drawing = newValue;
     this.stateSetter(this.drawing);
     if (!this._drawing) {
@@ -20,7 +21,7 @@ export default class Pencil {
     }
   }
 
-  constructor(svg: SVGSVGElement, stateSetter: Function) {
+  constructor(svg: SVGSVGElement, stateSetter: StateSetterFn) {
     this.svg = svg;
     this.stateSetter = stateSetter;
     this.createRoot();
@@ -78,15 +79,16 @@ export default class Pencil {
     }
     if (!this.path || !this.prevX || !this.prevY) {
       this.startDrawing(e);
+      return;
     }
-    const d = this.path!.getAttribute("d");
+    const d = this.path.getAttribute("d");
     const point = getSVGCoordinates(e.clientX, e.clientY, this.svg);
     const newX = point.x;
     const newY = point.y;
 
-    const midX = (this.prevX! + newX) / 2;
-    const midY = (this.prevY! + newY) / 2;
-    this.path!.setAttribute("d", `${d} Q${this.prevX},${this.prevY} ${midX},${midY}`);
+    const midX = (this.prevX + newX) / 2;
+    const midY = (this.prevY + newY) / 2;
+    this.path.setAttribute("d", `${d} Q${this.prevX},${this.prevY} ${midX},${midY}`);
     this.prevX = newX;
     this.prevY = newY;
   }

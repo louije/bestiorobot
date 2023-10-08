@@ -7,8 +7,8 @@
   function clearDrawing() {
     dispatch("clearDrawing");
   }
-  function playpauseLevelThree() {
-    dispatch("playpauseLevelThree");
+  function playpause() {
+    dispatch("playpause");
   }
   function showInfo() {
     dispatch("showInfo");
@@ -16,12 +16,12 @@
 </script>
 
 <div class="buttons-group">
-  {#if level !== 3}
+  {#if level !== 1 && level !== 3}
     <button on:click={clearDrawing} class="button clear">
       <img src="/reset.svg" alt="Effacer les gribouillis" />
     </button>
   {:else}
-    <button on:click={playpauseLevelThree} class="button play">
+    <button on:click={playpause} class="button play">
       <img src="/playpause.svg" alt="Jouer / mettre en pause" />
     </button>
   {/if}
