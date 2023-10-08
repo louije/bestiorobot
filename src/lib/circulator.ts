@@ -46,11 +46,11 @@ export default class Circulator {
     rotationTarget.setAttribute("fill", "transparent");
     parent.prepend(rotationTarget);
 
-    document.addEventListener("mousedown", this.startScratching.bind(this));
-    document.addEventListener("mousemove", this.scratch.bind(this));
-    document.addEventListener("mouseup", this.stopScratching.bind(this));
+    document.addEventListener("pointerdown", this.startScratching.bind(this));
+    document.addEventListener("pointermove", this.scratch.bind(this));
+    document.addEventListener("pointerup", this.stopScratching.bind(this));
   }
-  startScratching(e: MouseEvent) {
+  startScratching(e: PointerEvent) {
     this.scratching = true;
     if (this.animating) {
       this.animation.effect = null;
@@ -60,7 +60,7 @@ export default class Circulator {
     
     this.group.style.transform = `rotate(${0 - this.currentAngle}deg)`;
   }
-  scratch(e: MouseEvent) {
+  scratch(e: PointerEvent) {
     if (!this.scratching) {
       return;
     }

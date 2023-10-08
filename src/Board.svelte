@@ -210,7 +210,7 @@
       // playTime = durations.reduce((total, val) => { return total + val }, 0); // average
       // playTime = percentile(durations, 0.75) * sounds.length; // 75% of frags
     } else {
-      playTime = times[boardName] || (level === 1) ? 8 : 50;
+      playTime = times[boardName] || 50;
     }
     circulator = new Circulator(fragments, axis, remotePlayer, playTime);
   }
@@ -234,7 +234,10 @@
     }
   }
   function playpauseAllSounds() {
-    const maxDuration = Math.max(...sounds.map((s) => s.duration));
+    let maxDuration = Math.max(...sounds.map((s) => s.duration));
+    if (isNaN(maxDuration)) {
+      maxDuration = times[boardName] || 8;
+    }
     root.style.setProperty("--duration", `${maxDuration}s`);
     if (isPlaying()) {
       svg?.classList.remove("is-playing");
@@ -290,7 +293,8 @@
       // e.addEventListener("click", () => {
       //   sounds[i].play();
       // });
-      e.addEventListener("mouseenter", (e: MouseEvent) => {
+      e.addEventListener("pointerenter", (e: PointerEvent) => {
+        console.log("heppeing", e.buttons, e)
         if (e.buttons > 0) {
           sounds[i].play();
         }

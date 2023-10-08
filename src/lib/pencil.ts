@@ -38,10 +38,13 @@ export default class Pencil {
   }
 
   addEventListeners() {
-    document.addEventListener("mousedown", this.mousedown.bind(this));
-    document.addEventListener("mouseup", this.mouseup.bind(this));
-    this.svg.addEventListener("mousemove", this.mousemove.bind(this));
-    this.svg.addEventListener("mouseleave", this.stopDrawing.bind(this));
+    document.addEventListener("pointerdown", this.pointerdown.bind(this));
+
+    document.addEventListener("pointerup", this.pointerup.bind(this));
+
+    this.svg.addEventListener("pointermove", this.pointermove.bind(this));
+
+    this.svg.addEventListener("pointerleave", this.stopDrawing.bind(this));
   }
 
   updateState() {
@@ -58,7 +61,7 @@ export default class Pencil {
     return newPath;
   }
 
-  startDrawing(e: MouseEvent) {
+  startDrawing(e: PointerEvent) {
     const point = getSVGCoordinates(e.clientX, e.clientY, this.svg);
     this.prevX = point.x;
     this.prevY = point.y;
@@ -89,16 +92,19 @@ export default class Pencil {
     }
   }
 
-  mousedown() {
+  pointerdown(e: PointerEvent) {
     if (!this.isOn) { return; }
     this.drawing = true;
+    e.target.releasePointerCapture(e.pointerId)
   }
-
-  mouseup() {
+  
+  pointerup() {
     this.drawing = false;
   }
+  
+  pointermove(e: PointerEvent) {
+    e.target.releasePointerCapture(e.pointerId)
 
-  mousemove(e: MouseEvent) {
     if (!this.drawing || !this.isOn) {
       return;
     }

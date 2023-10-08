@@ -9,6 +9,7 @@
 
 body {
   font-family: NectoMono, sans-serif;
+  overflow: hidden;
 }
 p {
   margin: 0;
