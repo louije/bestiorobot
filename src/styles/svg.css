@@ -21,7 +21,7 @@
   transition: transform var(--duration) linear;
 }
 .pencil-mark {
-  stroke-width: 0.75px;
+  stroke-width: 1.5px;
   stroke: #f86806;
   stroke-opacity: 0.88;
   stroke-linecap: round;
