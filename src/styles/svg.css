@@ -22,7 +22,7 @@
 }
 .pencil-mark {
   stroke-width: 1.5px;
-  stroke: #f86806;
+  stroke: var(--accent-color, #f86806);
   stroke-opacity: 0.88;
   stroke-linecap: round;
   fill: none;

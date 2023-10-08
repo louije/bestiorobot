@@ -72,13 +72,13 @@
   }
   .button--active {
     border: 2px solid white;
-    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.25), 0 0 0 2px orange;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.25), 0 0 0 2px var(--accent-color, #f86806);
   }
   .button--active:hover {
-    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.33), 0 0 0 2px orange;
+    box-shadow: 3px 6px 5px rgba(0, 0, 0, 0.33), 0 0 0 2px var(--accent-color, #f86806);
   }
   .button--active:active {
-    box-shadow: 2px 4px 2.5px rgba(0, 0, 0, 0.25), 0 0 0 2px orange;
+    box-shadow: 2px 4px 2.5px rgba(0, 0, 0, 0.25), 0 0 0 2px var(--accent-color, #f86806);
   }
   .button + .button {
     margin-left: 1rem;

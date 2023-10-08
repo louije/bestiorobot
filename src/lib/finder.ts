@@ -8,6 +8,10 @@ import texts from "@/data/texts.json";
 
 type Tree = Record<MonsterSlug, Record<LevelSlug, string[]>>;
 type Route = [MonsterSlug?, LevelSlug?, BoardSlug?];
+type MonsterColorMap = {
+  indicator: string;
+  accent: string;
+}
 export type Data = {
   texts?: Record<string, string>;
   phrase?: Phrase;
@@ -19,6 +23,7 @@ type Phrase = {
   monster: MonsterSlug;
   board?: BoardSlug;
   file?: () => Promise<unknown>;
+  color?: string;
 };
 export type BoardNavigation = {
   index?: number;
@@ -36,11 +41,23 @@ const monsters: Record<MonsterCode, MonsterSlug> = {
   "PHIL": "philanthrope"
 };
 
-export const monsterColors: Record<MonsterSlug, string> = {
-  "aquatique": "#97ff7b",
-  "clanique": "#f47516",
-  "gourmand": "#8352b2",
-  "philanthrope": "#48bfed",
+export const monsterColors: Record<MonsterSlug, MonsterColorMap> = {
+  "aquatique": {
+    indicator: "#97ff7b",
+    accent: "#f86806",
+  },
+  "clanique": {
+    indicator: "#f47516",
+    accent: "#4ad0c9",
+  },
+  "gourmand": {
+    indicator: "#8352b2",
+    accent: "#1a1aa7",
+  },
+  "philanthrope": {
+    indicator: "#48bfed",
+    accent: "#ff1a1a",
+  },
 }
 
 export default class Finder {
@@ -167,6 +184,7 @@ export default class Finder {
       monster,
       board,
       file: (phrase) ? this.files[`/src/phrases/${phrase}.svg`] : undefined,
+      color: monsterColors[monster].accent,
     };
   }
 

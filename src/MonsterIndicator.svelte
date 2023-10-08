@@ -13,11 +13,11 @@
 </script>
 
 <div class="MonsterIndicator">
-  {#each Object.entries(monsterColors) as [monster, color]}
+  {#each Object.entries(monsterColors) as [monster, colors]}
     <a
       href={`/${monster}/${levelAndBoard}`}
       data-sveltekit-reload
-      class="MonsterIndicator__item" style="background-color: {color}" class:MonsterIndicator--current={monster === currentMonster ? true : false}
+      class="MonsterIndicator__item" style="background-color: {colors.indicator}" class:MonsterIndicator--current={monster === currentMonster ? true : false}
     >
       <span class="MonsterIndicator__name">Monstre {monster}</span>
     </a>

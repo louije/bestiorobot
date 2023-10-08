@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Data } from "@/lib/finder";
+  import { onMount } from "svelte";
   import Board from "@/Board.svelte";
   import Buttons from "@/Buttons.svelte";
   import BottomNavigation from "@/BottomNavigation.svelte";
@@ -17,6 +18,7 @@
   const navigation = data.navigation;
   const helpText = data.texts?.help;
 
+  let main: HTMLElement;
   let infoVisible = false;;
   let boardComponent;
   let dirty = false;
@@ -34,9 +36,16 @@
   function pencilStateChange(e: CustomEvent<boolean>) {
     pencilIsOn = e.detail;
   }
+
+  onMount(() => {
+    const color = phraseData.color;
+    if (color) {
+      main.style.setProperty("--accent-color", color);
+    }
+  });
 </script>
 
-<main class="u-FullScreen">
+<main class="u-FullScreen" bind:this={main}>
   <div class="BoardContainer u-FullScreen">
     <Board
       {boardName} {file} {level}
