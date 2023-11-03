@@ -95,7 +95,7 @@ export default class Pencil {
   pointerdown(e: PointerEvent) {
     if (!this.isOn) { return; }
     this.drawing = true;
-    e.target.releasePointerCapture(e.pointerId)
+    (e.target as Element).releasePointerCapture(e.pointerId)
   }
   
   pointerup() {
@@ -103,7 +103,7 @@ export default class Pencil {
   }
   
   pointermove(e: PointerEvent) {
-    e.target.releasePointerCapture(e.pointerId)
+    (e.target as Element).releasePointerCapture(e.pointerId)
 
     if (!this.drawing || !this.isOn) {
       return;
