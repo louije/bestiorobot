@@ -271,7 +271,7 @@
 
 <div class={rootClass} bind:this={root}>
   <svelte:component this={boardComponent} />
-  {#if audioState !== "running"}
+  {#if audioState !== "running" && level !== 1 && level !== 3}
     <AudioStarter />
   {/if}
 </div>
