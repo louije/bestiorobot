@@ -12,7 +12,7 @@
   const level = phraseData.level;
   const monster = phraseData.monster;
 
-  const navigation = data.navigation;
+  const navigation = data.navigation!;
 
   let board;
 </script>

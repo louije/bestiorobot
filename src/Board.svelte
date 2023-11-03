@@ -1,9 +1,10 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { soundFileFor } from "$/src/lib/base";
-  import { percentile } from "$lib/util";
-  import Pencil from "$lib/pencil";
-  import Circulator from "$lib/circulator";
+  import { soundFileFor } from "@/lib/base";
+  import Pencil from "@/lib/pencil";
+  import Circulator from "@/lib/circulator";
+  import AudioPreloader from "@/lib/audio-preloader";
+  import type AudioLibrary from "@/lib/audio-library";
 
   export let boardName: string;
   export let file: () => Promise<any>;
@@ -15,7 +16,9 @@
   let boardComponent: any;
   let svg: SVGSVGElement | null;
   let elements: Array<SVGElement>;
-  let sounds: Array<HTMLAudioElement>;
+
+  let preloader: AudioPreloader;
+  let library: AudioLibrary;
 
   let isDrawing: boolean = false;
   let pencil: Pencil;
@@ -37,7 +40,6 @@
   onMount(async () => {
     const module = await file();
     boardComponent = module.default;
-    // console.log("mounting", phrase);
     requestAnimationFrame(waitForSVG);
   });
 
@@ -58,7 +60,6 @@
       }
       return requestAnimationFrame(waitForSVG);
     }
-    // console.log("mounted", phrase, svg);
     setup();
   }
 
@@ -116,48 +117,15 @@
   }
 
   function loadSounds() {
-    let soundPaths: Array<string> = [];
-
-    sounds = elements.map((e) => {
+    let soundsAndPaths = elements.reduce((list, e) => {
       const path = soundFileFor(e.id);
-      const audio = document.createElement("audio") as HTMLAudioElement;
-      audio.src = path;
-      audio.id = `audio_${e.id}`;
-      // audio.addEventListener("canplaythrough", (e) => {
-      // console.log("loaded", e.target, e);
-      // });
-      audio.hidden = true;
-      root.append(audio);
-      return audio;
-    });
-  }
+      list[e.id] = path;
+      return list;
+    }, {} as { [key: string]: string });
 
-  async function soundsLoaded() {
-    const canPlayThroughPromises = sounds.map(
-      (audio) =>
-        new Promise((resolve, reject) => {
-          let i = 0;
-          const checkReadyState = () => {
-            if (audio.readyState >= 4) {
-              resolve(audio);
-            } else {
-              i++;
-              if (i > 20) {
-                reject(`loading ${audio.src} took too long.`);
-              } else {
-                setTimeout(checkReadyState, 100);
-              }
-            }
-          };
-          checkReadyState();
-        })
-    );
-
-    return Promise.all(canPlayThroughPromises)
-      .then((loadedAudioElements) =>
-        console.log(`All ${loadedAudioElements.length} audio elements can play through`)
-      )
-      .catch((error) => console.error("Audio loading error:", error));
+    preloader = new AudioPreloader(soundsAndPaths);
+    library = preloader.getLibrary();
+    preloader.preload();
   }
 
   async function setupInteractions() {
@@ -177,13 +145,9 @@
       return;
     }
 
-    await soundsLoaded();
-    const durations = sounds.map((s) => s.duration).filter((d) => !isNaN(d));
-    // const averagePlayTime = durations.reduce((total, val) => { return total + val }, 0);
-    const medianPlayTime = percentile(durations, 0.5) * sounds.length;
-    // const seventyFivePlayTime = percentile(durations, 0.75) * sounds.length;
-    // console.log("average", averagePlayTime, "median", medianPlayTime, "75", seventyFivePlayTime);
-    circulator = new Circulator(fragments, axis, remotePlayer, medianPlayTime);
+    await preloader.isLoaded();
+    const playTime = library.getMedianPlayTime();
+    circulator = new Circulator(fragments, axis, remotePlayer, playTime);
   }
 
   async function animateLevelThree() {
@@ -201,76 +165,44 @@
     }
   }
 
-  function isPlaying(): boolean {
-    return sounds.map((s) => s.paused).some((p) => p === false);
-  }
-
   function remotePlayer(fragment: string, command: string = "play") {
-    const sound = document.querySelector<HTMLAudioElement>(`#audio_${fragment}`);
-    if (!sound) {
+    if (!library.getSound(fragment)) {
       return;
     }
     if (command === "play") {
-      sound.play();
+      library.play(fragment);
     }
     if (command === "pause") {
-      sound.pause();
+      library.stopAll();
     }
   }
 
   function toggleAllOnClick() {
     svg?.addEventListener("click", () => {
-      const maxDuration = Math.max(...sounds.map((s) => s.duration));
+      const maxDuration = library.getMaxPlayTime();
       root.style.setProperty("--duration", `${maxDuration}s`);
 
-      if (isPlaying()) {
+      if (library.isPlaying()) {
         svg?.classList.remove("is-playing");
-        sounds.forEach((s) => {
-          s.pause();
-          s.currentTime = 0;
-        });
+        library.stopAll();
       } else {
         svg?.classList.add("is-playing");
-        sounds.forEach((s) => s.play());
+        library.playAll();
       }
     });
 
-    sounds.forEach((s) => {
-      s.addEventListener("ended", () => {
-        if (!isPlaying()) {
-          svg?.classList.remove("is-playing");
-        }
-      });
-    });
+    library.stoppedPlayingCallback = () => {
+      svg?.classList.remove("is-playing");
+    };
   }
   function startOnHoverAndClick() {
-    elements.forEach((e, i) => {
-      // e.addEventListener("click", () => {
-      //   sounds[i].play();
-      // });
-      e.addEventListener("mouseenter", (e: MouseEvent) => {
-        if (e.buttons > 0) {
-          sounds[i].play();
+    elements.forEach((e) => {
+      e.addEventListener("mouseenter", (event: MouseEvent) => {
+        if (event.buttons > 0) {
+          library.play(e.id);
         }
       });
     });
-  }
-
-  function getPathX(path: Element): number {
-    const shape = path.getAttribute("d");
-    if (!shape) {
-      return 0;
-    }
-    return parseInt(shape.split(",")[0].replace("M", ""));
-  }
-
-  function playSoundFor(element: SVGElement, force: Boolean = false) {
-    const index = elements.indexOf(element);
-    if (index !== -1 && sounds[index]) {
-      if (force || sounds[index].paused === true) {
-        sounds[index].play();
-      }
-    }
   }
 </script>
 
