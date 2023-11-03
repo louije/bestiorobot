@@ -38,6 +38,10 @@ export default class AudioLibrary {
     return Math.max(...Object.values(this.sounds).map(buffer => buffer.duration));
   }
 
+  getContext(): AudioContext {
+    return this.context;
+  }
+
   play(name: string): void {
     const source = this.context.createBufferSource();
     const buffer = this.getSound(name);

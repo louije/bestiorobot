@@ -217,7 +217,7 @@
       library.playAll();
     }
   }
-  
+
   function playpauseCirculator() {
     if (circulator && circulator.animating) {
       circulator.pause();
@@ -248,6 +248,9 @@
     };
   }
   function startOnHoverAndClick() {
+    root.addEventListener("pointerdown", () => {
+      library.getContext().resume();
+    });
     elements.forEach((e) => {
       e.addEventListener("pointerenter", (event: PointerEvent) => {
         if (event.buttons > 0) {
