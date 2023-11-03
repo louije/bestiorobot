@@ -43,6 +43,11 @@ export default class AudioLibrary {
   }
 
   play(name: string): void {
+    // avoid echo if already playing
+    if (this.playingSources[name]) {
+      return;
+    }
+
     const source = this.context.createBufferSource();
     const buffer = this.getSound(name);
     if (buffer) {

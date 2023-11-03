@@ -1,11 +1,11 @@
 <script lang="ts">
   import { onMount, createEventDispatcher } from "svelte";
   import { soundFileFor } from "@/lib/base";
-  import { percentile } from "@/lib/util";
   import Pencil from "@/lib/pencil";
   import Circulator from "@/lib/circulator";
   import cachedTimes from "@/data/times.json";
 
+  import AudioStarter from "@/AudioStarter.svelte";
   import AudioPreloader from "@/lib/audio-preloader";
   import type AudioLibrary from "@/lib/audio-library";
 
@@ -29,6 +29,7 @@
   let pencilIsOn = true;
   let isDirty = false;
   let pencil: Pencil;
+  let audioState: string = "unknown";
   $: {
     if (pencil) {
       pencil.drawing = isDrawing;
@@ -248,8 +249,12 @@
     };
   }
   function startOnHoverAndClick() {
-    root.addEventListener("pointerdown", () => {
-      library.getContext().resume();
+    const context = library.getContext();
+    context.onstatechange = () => {
+      audioState = context.state;
+    };
+    root.addEventListener("pointerup", () => {
+      context.resume();
     });
     elements.forEach((e) => {
       e.addEventListener("pointerenter", (event: PointerEvent) => {
@@ -266,6 +271,9 @@
 
 <div class={rootClass} bind:this={root}>
   <svelte:component this={boardComponent} />
+  {#if audioState !== "running"}
+    <AudioStarter />
+  {/if}
 </div>
 
 <style>
