@@ -15,7 +15,7 @@
   const level = phraseData.level;
   const board = phraseData.board;
 
-  const navigation = data.navigation;
+  const navigation = data.navigation!;
   const helpText = data.texts?.help;
 
   let main: HTMLElement;

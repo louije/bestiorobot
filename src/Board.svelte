@@ -6,6 +6,9 @@
   import Circulator from "@/lib/circulator";
   import cachedTimes from "@/data/times.json";
 
+  import AudioPreloader from "@/lib/audio-preloader";
+  import type AudioLibrary from "@/lib/audio-library";
+
   export let boardName: string;
   export let file: () => Promise<any>;
   export let level: number;
@@ -17,7 +20,9 @@
   let boardComponent: any;
   let svg: SVGSVGElement | null;
   let elements: Array<SVGElement>;
-  let sounds: Array<HTMLAudioElement>;
+
+  let preloader: AudioPreloader;
+  let library: AudioLibrary;
 
   let times: Record<string, number> = cachedTimes;
   let isDrawing = false;
@@ -140,48 +145,15 @@
   }
 
   function loadSounds() {
-    let soundPaths: Array<string> = [];
-
-    sounds = elements.map((e) => {
+    let soundsAndPaths = elements.reduce((list, e) => {
       const path = soundFileFor(e.id);
-      const audio = document.createElement("audio") as HTMLAudioElement;
-      audio.src = path;
-      audio.id = `audio_${e.id}`;
-      // audio.addEventListener("canplaythrough", (e) => {
-      // console.log("loaded", e.target, e);
-      // });
-      audio.hidden = true;
-      root.append(audio);
-      return audio;
-    });
-  }
+      list[e.id] = path;
+      return list;
+    }, {} as { [key: string]: string });
 
-  async function soundsLoaded() {
-    const canPlayThroughPromises = sounds.map(
-      (audio) =>
-        new Promise((resolve, reject) => {
-          let i = 0;
-          const checkReadyState = () => {
-            if (audio.readyState >= 4) {
-              resolve(audio);
-            } else {
-              i++;
-              if (i > 20) {
-                reject(`loading ${audio.src} took too long.`);
-              } else {
-                setTimeout(checkReadyState, 100);
-              }
-            }
-          };
-          checkReadyState();
-        })
-    );
-
-    return Promise.allSettled(canPlayThroughPromises)
-      .then((loadedAudioElements) =>
-        console.log(`All ${loadedAudioElements.length} audio elements can play through`)
-      )
-      .catch((error) => console.error("Audio loading error:", error));
+    preloader = new AudioPreloader(soundsAndPaths);
+    library = preloader.getLibrary();
+    preloader.preload();
   }
 
   async function setupInteractions() {
@@ -202,16 +174,12 @@
       return;
     }
 
-    await soundsLoaded();
-    const durations = sounds.map((s) => s.duration).filter((d) => !isNaN(d));
-    
-    if (durations.length) {
-      playTime = percentile(durations, 0.5) * sounds.length; // median
-      // playTime = durations.reduce((total, val) => { return total + val }, 0); // average
-      // playTime = percentile(durations, 0.75) * sounds.length; // 75% of frags
-    } else {
+    await preloader.isLoaded();
+    playTime = library.getMedianPlayTime();
+    if (playTime === 0) {
       playTime = times[boardName] || 50;
     }
+
     circulator = new Circulator(fragments, axis, remotePlayer, playTime);
   }
 
@@ -234,22 +202,22 @@
     }
   }
   function playpauseAllSounds() {
-    let maxDuration = Math.max(...sounds.map((s) => s.duration));
-    if (isNaN(maxDuration)) {
+    let maxDuration = library.getMaxPlayTime();
+    if (isNaN(maxDuration) || maxDuration === 0) {
       maxDuration = times[boardName] || 8;
     }
+
     root.style.setProperty("--duration", `${maxDuration}s`);
-    if (isPlaying()) {
+
+    if (library.isPlaying()) {
       svg?.classList.remove("is-playing");
-      sounds.forEach((s) => {
-        s.pause();
-        s.currentTime = 0;
-      });
+      library.stopAll();
     } else {
       svg?.classList.add("is-playing");
-      sounds.forEach((s) => s.play());
+      library.playAll();
     }
   }
+  
   function playpauseCirculator() {
     if (circulator && circulator.animating) {
       circulator.pause();
@@ -258,20 +226,15 @@
     }
   }
 
-  function isPlaying(): boolean {
-    return sounds.map((s) => s.paused).some((p) => p === false);
-  }
-
   function remotePlayer(fragment: string, command: string = "play") {
-    const sound = document.querySelector<HTMLAudioElement>(`#audio_${fragment}`);
-    if (!sound) {
+    if (!library.getSound(fragment)) {
       return;
     }
     if (command === "play") {
-      sound.play();
+      library.play(fragment);
     }
     if (command === "pause") {
-      sound.pause();
+      library.stopAll();
     }
   }
 
@@ -280,23 +243,15 @@
       playpauseAllSounds();
     });
 
-    sounds.forEach((s) => {
-      s.addEventListener("ended", () => {
-        if (!isPlaying()) {
-          svg?.classList.remove("is-playing");
-        }
-      });
-    });
+    library.stoppedPlayingCallback = () => {
+      svg?.classList.remove("is-playing");
+    };
   }
   function startOnHoverAndClick() {
-    elements.forEach((e, i) => {
-      // e.addEventListener("click", () => {
-      //   sounds[i].play();
-      // });
-      e.addEventListener("pointerenter", (e: PointerEvent) => {
-        console.log("heppeing", e.buttons, e)
-        if (e.buttons > 0) {
-          sounds[i].play();
+    elements.forEach((e) => {
+      e.addEventListener("pointerenter", (event: PointerEvent) => {
+        if (event.buttons > 0) {
+          library.play(e.id);
         }
       });
     });
