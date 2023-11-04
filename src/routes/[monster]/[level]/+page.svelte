@@ -14,16 +14,16 @@
     <nav class="TopNavigation">
       <TopNavigation {monster} {level} />
     </nav>
-  </div>
-  <div class="u-RootScreen u-FullScreen">
-    <div class="Question">
-      <h1>
-        {@html data.texts?.title}
-      </h1>
-      <p>{@html data.texts?.sub}</p>
-    </div>
-    <div class="BottomNavigation">
-      <BottomNavigation {navigation} />
+    <div class="u-RootScreen">
+      <div class="Question">
+        <h1>
+          {@html data.texts?.title}
+        </h1>
+        <p>{@html data.texts?.sub}</p>
+      </div>
+      <div class="BottomNavigation">
+        <BottomNavigation {navigation} />
+      </div>
     </div>
   </div>
 </main>
