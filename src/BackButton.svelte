@@ -5,7 +5,7 @@
   </a>
 </div>
 
-<style lang="scss">
+<style>
   div {
     display: flex;
     align-items: center;
@@ -27,18 +27,16 @@
   .MonsterIndicator__name {
     display: none;
   }
-  .MonsterDNA:hover,
-  .MonsterDNA:focus {
-    .MonsterIndicator__name {
-      display: block;
-      position: absolute;
-      white-space: nowrap;
-      text-align: right;
-      left: 100%;
-      top: 50%;
-      transform: translateY(-50%);
-      padding: 0 0 0 1rem;
-      color: black;
-    }
+  .MonsterDNA:hover .MonsterIndicator__name,
+  .MonsterDNA:focus .MonsterIndicator__name {
+    display: block;
+    position: absolute;
+    white-space: nowrap;
+    text-align: right;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0 0 0 1rem;
+    color: black;
   }
 </style>

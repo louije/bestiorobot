@@ -24,7 +24,7 @@
   {/each}
 </div>
 
-<style lang="scss">
+<style>
 .MonsterIndicator {
   display: flex;
   gap: .75rem;
@@ -45,19 +45,17 @@
 .MonsterIndicator__name {
   display: none;
 }
-.MonsterIndicator__item:hover,
-.MonsterIndicator__item:focus {
-  .MonsterIndicator__name {
-    display: block;
-    position: absolute;
-    white-space: nowrap;
-    text-align: right;
-    right: 100%;
-    top: 50%;
-    transform: translateY(-50%);
-    padding: 0 1rem 0 0;
-    color: black;
-  }
+.MonsterIndicator__item:hover .MonsterIndicator__name,
+.MonsterIndicator__item:focus .MonsterIndicator__name {
+  display: block;
+  position: absolute;
+  white-space: nowrap;
+  text-align: right;
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0 1rem 0 0;
+  color: black;
 }
 
 </style>
