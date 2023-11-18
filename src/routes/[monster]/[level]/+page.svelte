@@ -46,10 +46,10 @@
   }
   .Question {
     margin: auto 0;
+    text-align: center;;
   }
   p {
     margin-top: 2rem;
     text-align: center;
-    width: 80%;
   }
 </style>

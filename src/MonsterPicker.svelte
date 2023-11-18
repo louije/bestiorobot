@@ -32,7 +32,6 @@
     text-decoration: none;
   }
   .Picker {
-    margin-right: 3rem;
     text-align: center;
     display: flex;
     flex-direction: column;
