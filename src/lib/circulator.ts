@@ -186,8 +186,9 @@ export default class Circulator {
     return (degrees + 360) % 360;
   }
 
-  closest(targetAngle: number): Element | null {
+  closest(target: number): Element | null {
     const angles = Array.from(this.elementsMap.keys());
+    const targetAngle = ((target % 360) + 360) % 360; // handle both negative angles, and angles about 360.
     let left = 0;
     let right = angles.length - 1;
 
