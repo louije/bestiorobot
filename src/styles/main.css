@@ -7,6 +7,9 @@
   src: url(/Nunito/static/Nunito-Light.ttf);
 }
 
+html {
+  touch-action: manipulation;
+}
 body {
   font-family: NectoMono, sans-serif;
   overflow: hidden;
