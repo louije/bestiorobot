@@ -9,7 +9,7 @@
   "level-2": {
     "title": "Dis Bestiorobot, <br>est-ce que tu sens bon ?",
     "sub": "À toi de décrypter la réponse du Bestiorobot",
-    "help": "La parole peut s’écrire autrement qu’avec l’alphabet. Ici, chaque phrase est dessinée par son sonagramme : on voit le son des mots dans le temps. Par exemple, quand la voix devient plus aiguë, le trait remonte."
+    "help": "La parole peut s’écrire autrement qu’avec l’alphabet. Ici chaque morceau de phrase est représenté par de petites courbes : quand la voix devient aiguë le trait monte, quand elle devient grave il descend. Cette façon de dessiner le son dans le temps, ça s’appelle un sonagramme."
   },
   "level-3": {
     "title": "Dis Bestiorobot, <br>est-ce que tu t’entends bien avec tes voisins ?",

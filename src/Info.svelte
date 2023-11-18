@@ -32,7 +32,7 @@
     box-shadow: -5px -5px 10px rgba(0, 0, 0, 0.25);
     width: 100%;
     max-width: 40rem;
-    max-height: 75vh;
+    max-height: 88vh;
     overflow: scroll;
     z-index: 10;
     display: flex;
