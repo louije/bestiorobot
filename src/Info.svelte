@@ -13,7 +13,7 @@
     <img src="/close.svg" alt="Fermer le panneau d’information" />
   </button>
   <p>
-    {text}
+    {@html text}
   </p>
   <button class="close" on:click={closeInfo}>
     <img src="/info.svg" alt="Icône d'information" />
