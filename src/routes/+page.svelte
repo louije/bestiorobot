@@ -25,4 +25,7 @@
     justify-content: center;
     text-align: center;
   }
+  h1 {
+    margin: auto 0;
+  }
 </style>
