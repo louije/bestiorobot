@@ -15,7 +15,7 @@
   <p>
     {@html text}
   </p>
-  <button class="close" on:click={closeInfo}>
+  <button class="ghost-close" on:click={closeInfo}>
     <img src="/info.svg" alt="Icône d'information" />
   </button>
 </div>
@@ -38,6 +38,10 @@
     display: flex;
     flex-direction: column;
   }
+  .ghost-close {
+    position: absolute;
+    bottom: 2rem;
+  }
   p {
     margin: 1rem 0;
   }
@@ -52,5 +56,8 @@
   }
   img {
     width: 2.5rem;
+  }
+  img[src="/info.svg"] {
+    opacity: 0;
   }
 </style>
