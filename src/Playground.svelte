@@ -46,7 +46,7 @@
 </script>
 
 <main class="u-FullScreen" bind:this={main}>
-  <div class="BoardContainer u-FullScreen">
+  <div class="BoardContainer u-FullScreen Board-{level}">
     <Board
       {boardName} {file} {level}
       bind:this={boardComponent}
@@ -93,6 +93,9 @@
   .BoardContainer {
     grid-row: 1/-1;
     grid-column: 1/-1;
+  }
+  .Board-1 {
+    padding: 5rem;
   }
   .TopNavigation {
     grid-area: topnav;
