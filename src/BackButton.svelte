@@ -29,7 +29,6 @@
   }
   .MonsterDNA:hover .MonsterIndicator__name,
   .MonsterDNA:focus .MonsterIndicator__name {
-    display: block;
     position: absolute;
     white-space: nowrap;
     text-align: right;
@@ -38,5 +37,13 @@
     transform: translateY(-50%);
     padding: 0 0 0 1rem;
     color: black;
+  }
+  .MonsterDNA:focus .MonsterIndicator__name {
+    display: block;
+  }
+  @media (hover: hover) {
+    .MonsterDNA:hover .MonsterIndicator__name {
+      display: block;
+    }
   }
 </style>
