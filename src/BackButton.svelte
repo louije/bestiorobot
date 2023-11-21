@@ -20,9 +20,8 @@
   }
   .MonsterDNA img {
     display: block;
-    height: 3.5rem;
+    height: 3rem;
     pointer-events: none;
-    padding-bottom: .5rem;
   }
   .MonsterIndicator__name {
     display: none;
